@@ -1,5 +1,5 @@
 /*
-  Auto-rotating tabs
+  Auto-rotating tabs: reference implementation.
   Self-contained: every style is scoped to <auto-rotating-tabs>, and nothing
   touches :root or body. Brands tune it with the --art-* custom properties
   (see README.md). The defaults live in var() fallbacks, so a theme can set
@@ -41,7 +41,7 @@ auto-rotating-tabs *::after { box-sizing: border-box; }
 .art__title { margin: 0; font: inherit; font-size: 16px; line-height: 28px; font-weight: 400; }
 .art__title button {
   appearance: none; margin: 0; padding: 0; border: 0; background: none;
-  font: inherit; color: inherit; text-align: left; width: 100%; cursor: pointer;
+  font: inherit; color: inherit; text-align: left; width: 100%; cursor: default;
 }
 .art__desc { padding-top: 8px; font-size: 16px; line-height: 24px; font-weight: 350; }
 .art__desc > * { margin: 0; }
@@ -58,7 +58,8 @@ auto-rotating-tabs *::after { box-sizing: border-box; }
 @container (min-width: 700px) {
   .art__inner {
     position: relative; flex-direction: row; gap: 0; padding: 24px;
-    min-height: 52.78cqi; /* 760px tall at a 1440px-wide container */
+    /* Design reference is 1440 × 760: scale with the container, capped at the reference height */
+    min-height: min(52.78cqi, 760px);
   }
   .art__panel {
     flex: 0 0 calc((100% - 24px) / 2);
@@ -89,6 +90,7 @@ auto-rotating-tabs *::after { box-sizing: border-box; }
   .art__item.is-leaving .art__media svg { filter: blur(18px); transition-duration: calc(var(--art-focus-ms, 900ms) * .75); }
 
   .art__title { font-size: 20px; line-height: 28px; opacity: .24; transition: opacity .35s ease; }
+  .art__title button { cursor: pointer; }
   .art__item:hover .art__title { opacity: .55; }
   .art__item.is-active .art__title { opacity: 1; }
 

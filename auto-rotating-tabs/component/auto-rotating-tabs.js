@@ -1,26 +1,46 @@
 /*
-  Auto-rotating tabs
-  A dependency-free custom element that enhances server-rendered markup
-  (a Shopify section, or any HTML). Content lives in the markup; this script
-  only adds behavior. Without JS, the component shows the first tab (lg)
-  or a stacked list (sm).
+  Auto-rotating tabs: reference implementation.
+  A dependency-free custom element that enhances server-rendered markup.
+  Content lives in the markup; this script only adds behavior. Without JS,
+  the wide layout shows the first tab and the narrow layout shows every card.
 
   Attributes:
-    data-interval="6"      seconds per tab
-    data-autoplay="false"  start paused (autoplay is also off under reduced motion)
+    data-interval="6"         seconds per tab
+    data-autoplay="false"     start paused (autoplay is also off under reduced motion)
+    data-label-pause / -play  control labels, so themes can pass translated strings
 */
 if (!customElements.get('auto-rotating-tabs')) {
-  const LG_MIN = 700; // keep in sync with the @container breakpoint in the CSS
+  const LG_MIN = 700; // matches the @container breakpoint in the CSS
   const ICON_PAUSE = '<path d="M4.5 3h5v18h-5zM14.5 3h5v18h-5z"/>';
   const ICON_PLAY = '<path d="M22 12a1.37 1.37 0 0 1-.65 1.17L9.07 20.8a1.37 1.37 0 0 1-2.07-1.17V4.37A1.37 1.37 0 0 1 9.07 3.2l12.28 7.63A1.37 1.37 0 0 1 22 12z"/>';
   let uid = 0;
 
   class AutoRotatingTabs extends HTMLElement {
     connectedCallback() {
+      if (!this.items) this.init();
+      if (!this.items.length) return;
+      this.listen(true);
+      this.resizeObserver.observe(this);
+      this.visibilityObserver.observe(this);
+    }
+
+    disconnectedCallback() {
+      if (!this.items?.length) return;
+      this.listen(false);
+      this.resizeObserver.disconnect();
+      this.visibilityObserver.disconnect();
+      this.seenObserver.disconnect();
+      clearTimeout(this.leavingTimer);
+      this.lg = null;
+      this.stop();
+    }
+
+    /* One-time setup; reconnecting (e.g. section reorder in the theme editor) reuses it */
+    init() {
       this.items = [...this.querySelectorAll('.art__item')];
       if (!this.items.length) return;
 
-      this.uid = this.id || `art-${++uid}`;
+      const id = this.id || `art-${++uid}`;
       this.intervalMs = (parseFloat(this.dataset.interval) || 6) * 1000;
       this.reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
       this.userPaused = this.dataset.autoplay === 'false' || this.reduceMotion;
@@ -28,35 +48,23 @@ if (!customElements.get('auto-rotating-tabs')) {
       this.visible = true;
       this.lg = null;
       this.elapsed = 0;
-      this.last = 0;
       this.active = Math.max(0, this.items.findIndex(item => item.classList.contains('is-active')));
-      this.bars = this.items.map(item => item.querySelector('.art__timer i'));
       this.list = this.querySelector('.art__list');
       this.control = this.querySelector('.art__control');
-      this.classList.add('is-enhanced');
-
-      this.items.forEach((item, i) => {
+      this.bars = this.items.map(item => item.querySelector('.art__timer i'));
+      this.buttons = this.items.map((item, i) => {
         const body = item.querySelector('.art__body');
-        if (body && !body.id) body.id = `${this.uid}-body-${i}`;
-        item.addEventListener('click', () => { if (this.lg) this.go(i); });
+        const button = item.querySelector('.art__title button');
+        if (body && !body.id) body.id = `${id}-body-${i}`;
+        if (body && button) button.setAttribute('aria-controls', body.id);
+        return button;
       });
 
-      this.list.addEventListener('keydown', this.onKeydown);
-      this.addEventListener('focusin', this.onFocus);
-      this.addEventListener('focusout', this.onFocus);
-      document.addEventListener('visibilitychange', this.onVisibility);
-      document.addEventListener('shopify:block:select', this.onBlockSelect);
-      document.addEventListener('shopify:block:deselect', this.onBlockSelect);
-      if (this.control) {
-        this.control.hidden = false;
-        this.control.addEventListener('click', this.onControl);
-        this.updateControl();
-      }
-
       this.resizeObserver = new ResizeObserver(([entry]) => this.setLayout(entry.contentRect.width >= LG_MIN));
-      this.resizeObserver.observe(this);
-      this.visibilityObserver = new IntersectionObserver(([entry]) => { this.visible = entry.isIntersecting; }, { threshold: .25 });
-      this.visibilityObserver.observe(this);
+      this.visibilityObserver = new IntersectionObserver(([entry]) => {
+        this.visible = entry.isIntersecting;
+        this.update();
+      }, { threshold: .25 });
       this.seenObserver = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (!entry.isIntersecting) return;
@@ -65,19 +73,23 @@ if (!customElements.get('auto-rotating-tabs')) {
         });
       }, { threshold: .35 });
 
-      this.setLayout(this.offsetWidth >= LG_MIN);
-
-      this.frame = requestAnimationFrame(this.tick);
+      if (this.control) {
+        this.control.hidden = false;
+        this.updateControl();
+      }
+      this.classList.add('is-enhanced');
     }
 
-    disconnectedCallback() {
-      cancelAnimationFrame(this.frame);
-      this.resizeObserver?.disconnect();
-      this.visibilityObserver?.disconnect();
-      this.seenObserver?.disconnect();
-      document.removeEventListener('visibilitychange', this.onVisibility);
-      document.removeEventListener('shopify:block:select', this.onBlockSelect);
-      document.removeEventListener('shopify:block:deselect', this.onBlockSelect);
+    listen(on) {
+      const method = on ? 'addEventListener' : 'removeEventListener';
+      this.list[method]('click', this.onClick);
+      this.list[method]('keydown', this.onKeydown);
+      this[method]('focusin', this.onFocus);
+      this[method]('focusout', this.onFocus);
+      this.control?.[method]('click', this.onControl);
+      document[method]('visibilitychange', this.onVisibility);
+      document[method]('shopify:block:select', this.onBlockSelect);
+      document[method]('shopify:block:deselect', this.onBlockSelect);
     }
 
     get running() {
@@ -85,22 +97,35 @@ if (!customElements.get('auto-rotating-tabs')) {
         !this.userPaused && !this.focused && !this.editorPaused;
     }
 
+    /* The timer loop only exists while the component is actually rotating */
+    update() {
+      if (this.running && !this.frame) {
+        this.last = 0;
+        this.frame = requestAnimationFrame(this.tick);
+      } else if (!this.running) {
+        this.stop();
+      }
+    }
+
+    stop() {
+      cancelAnimationFrame(this.frame);
+      this.frame = 0;
+    }
+
+    tick = now => {
+      this.elapsed += this.last ? now - this.last : 0;
+      this.last = now;
+      if (this.elapsed >= this.intervalMs) this.go((this.active + 1) % this.items.length);
+      const bar = this.bars[this.active];
+      if (bar) bar.style.transform = `scaleX(${Math.min(this.elapsed / this.intervalMs, 1)})`;
+      this.frame = requestAnimationFrame(this.tick);
+    };
+
     /* lg = tabs with one open row; sm = every card open and stacked */
     setLayout(lg) {
       if (lg === this.lg) return;
       this.lg = lg;
       this.items.forEach(item => {
-        const title = item.querySelector('.art__title');
-        const button = title.querySelector('button');
-        if (lg && !button) {
-          const b = document.createElement('button');
-          b.type = 'button';
-          b.setAttribute('aria-controls', item.querySelector('.art__body').id);
-          b.append(...title.childNodes);
-          title.append(b);
-        } else if (!lg && button) {
-          title.replaceChildren(...button.childNodes);
-        }
         if (lg) {
           this.seenObserver.unobserve(item);
         } else {
@@ -110,6 +135,7 @@ if (!customElements.get('auto-rotating-tabs')) {
       });
       this.elapsed = 0;
       this.render();
+      this.update();
     }
 
     go(i) {
@@ -121,7 +147,7 @@ if (!customElements.get('auto-rotating-tabs')) {
       if (!this.reduceMotion) {
         prev.classList.add('is-leaving');
         clearTimeout(this.leavingTimer);
-        this.leavingTimer = setTimeout(() => prev.classList.remove('is-leaving'), 900);
+        this.leavingTimer = setTimeout(() => prev.classList.remove('is-leaving'), this.focusMs());
       }
       this.render();
     }
@@ -129,13 +155,14 @@ if (!customElements.get('auto-rotating-tabs')) {
     render() {
       this.items.forEach((item, n) => {
         const on = n === this.active;
+        const button = this.buttons[n];
         item.classList.toggle('is-active', on);
-        const button = item.querySelector('.art__title button');
         if (button) {
-          button.setAttribute('aria-expanded', on);
-          button.tabIndex = on ? 0 : -1;
+          // Stacked cards are all open, so the titles stop acting as controls
+          button.tabIndex = this.lg ? 0 : -1;
+          if (this.lg) button.setAttribute('aria-expanded', on);
+          else button.removeAttribute('aria-expanded');
         }
-        // Collapsed rows and hidden media leave the accessibility tree on lg only
         const hide = this.lg && !on;
         item.querySelector('.art__body')?.toggleAttribute('inert', hide);
         item.querySelector('.art__media')?.toggleAttribute('inert', hide);
@@ -143,16 +170,15 @@ if (!customElements.get('auto-rotating-tabs')) {
       this.bars.forEach(bar => { if (bar) bar.style.transform = 'scaleX(0)'; });
     }
 
-    tick = now => {
-      const dt = this.last ? now - this.last : 0;
-      this.last = now;
-      if (this.running) {
-        this.elapsed += dt;
-        if (this.elapsed >= this.intervalMs) this.go((this.active + 1) % this.items.length);
-        const bar = this.bars[this.active];
-        if (bar) bar.style.transform = `scaleX(${Math.min(this.elapsed / this.intervalMs, 1)})`;
-      }
-      this.frame = requestAnimationFrame(this.tick);
+    focusMs() {
+      const value = getComputedStyle(this).getPropertyValue('--art-focus-ms').trim();
+      if (!value) return 900;
+      return value.endsWith('ms') ? parseFloat(value) : parseFloat(value) * 1000;
+    }
+
+    onClick = e => {
+      const i = this.items.indexOf(e.target.closest('.art__item'));
+      if (this.lg && i > -1) this.go(i);
     };
 
     onKeydown = e => {
@@ -162,33 +188,38 @@ if (!customElements.get('auto-rotating-tabs')) {
       const next = e.key === 'Home' ? 0 : e.key === 'End' ? n - 1
         : (this.active + (e.key === 'ArrowDown' ? 1 : -1) + n) % n;
       this.go(next);
-      this.items[next].querySelector('.art__title button')?.focus();
+      this.buttons[next]?.focus();
     };
 
-    /* Keyboard focus inside the component holds the current tab */
+    /* Keyboard focus on a tab holds it; focus on the pause control does not, so Play works */
     onFocus = e => {
-      this.focused = e.type === 'focusin' ? e.target.matches(':focus-visible') : this.contains(e.relatedTarget);
+      const target = e.type === 'focusin' ? e.target : e.relatedTarget;
+      this.focused = Boolean(target && this.list.contains(target) && target.matches(':focus-visible'));
+      this.update();
     };
 
-    onVisibility = () => { this.last = 0; };
+    onVisibility = () => this.update();
 
     onControl = () => {
       this.userPaused = !this.userPaused;
       this.updateControl();
+      this.update();
     };
 
     updateControl() {
-      this.control.setAttribute('aria-label', this.userPaused ? 'Play' : 'Pause');
+      const label = this.userPaused ? this.dataset.labelPlay || 'Play' : this.dataset.labelPause || 'Pause';
+      this.control.setAttribute('aria-label', label);
       const svg = this.control.querySelector('svg');
       if (svg) svg.innerHTML = this.userPaused ? ICON_PLAY : ICON_PAUSE;
     }
 
     /* Theme editor: selecting a block opens its tab and holds it there */
     onBlockSelect = e => {
-      const i = this.items.findIndex(item => item.contains(e.target) || item === e.target);
+      const i = this.items.findIndex(item => item === e.target || item.contains(e.target));
       if (i === -1) return;
       this.editorPaused = e.type === 'shopify:block:select';
       if (this.editorPaused) this.go(i);
+      this.update();
     };
   }
 

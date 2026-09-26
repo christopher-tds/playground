@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@350;400;500;700&family=IBM+Plex+Mono:wght@500;700&family=Inter:wght@400;500&display=swap">
-<!-- The component: these two files are what a theme copies -->
+<!-- The component (reference implementation) -->
 <link rel="stylesheet" href="component/auto-rotating-tabs.css">
 <script src="component/auto-rotating-tabs.js" defer></script>
 <!-- Preview page only: developer files drawer -->
@@ -83,39 +83,39 @@
   <div class="stage">
     <div class="frame frame--desktop" id="frame">
       <div class="scaler" id="scaler">
-        <!-- Component markup: the same structure shopify/section-auto-rotating-tabs.liquid renders -->
-        <auto-rotating-tabs data-interval="6">
+        <!-- Component markup: the contract shopify/section-auto-rotating-tabs.liquid renders -->
+        <auto-rotating-tabs data-interval="6" data-label-pause="Pause" data-label-play="Play">
           <div class="art__inner">
             <div class="art__panel">
               <h2 class="art__heading">Key Features</h2>
               <div class="art__list">
               <div class="art__item is-active">
-                <div class="art__media"><img src="assets/feature-1.jpg" alt="Skier in a helmet and mirrored goggles holding a snowboard" style="object-position: 50% 14%" width="1400" height="1400" loading="eager" decoding="async"></div>
-                <h3 class="art__title">MagFit™-enable for a gap-free fit</h3>
+                <div class="art__media"><img src="assets/feature-1.jpg" alt="Skier in a helmet and mirrored goggles holding a snowboard" style="object-position: 50% 14%" width="1400" height="1400" loading="lazy" decoding="async"></div>
+                <h3 class="art__title"><button type="button">MagFit™-enable for a gap-free fit</button></h3>
                 <div class="art__body"><div><div class="art__desc"><p>Ensures perfect alignment with the helmet vents to prevent fogging, and prevents vibration and shifting while skiing.</p></div></div></div>
                 <span class="art__timer" aria-hidden="true"><i></i></span>
               </div>
               <div class="art__item">
                 <div class="art__media"><img src="assets/feature-2.jpg" alt="Rider in a pale jacket shielding their face in bright sun" style="object-position: 60% 40%" width="1400" height="1400" loading="lazy" decoding="async"></div>
-                <h3 class="art__title">Reveal® 4K contrast-enhancing lens tech</h3>
+                <h3 class="art__title"><button type="button">Reveal® 4K contrast-enhancing lens tech</button></h3>
                 <div class="art__body"><div><div class="art__desc"><p>Next-generation optics that sharpen detail and boost contrast, giving you clearer vision in flat light conditions.</p></div></div></div>
                 <span class="art__timer" aria-hidden="true"><i></i></span>
               </div>
               <div class="art__item">
                 <div class="art__media"><img src="assets/feature-3.jpg" alt="Snowboarder in black with blue-tinted goggles and a lime board" style="object-position: 50% 35%" width="1400" height="1400" loading="lazy" decoding="async"></div>
-                <h3 class="art__title">Anti-fog ventilation system</h3>
+                <h3 class="art__title"><button type="button">Anti-fog ventilation system</button></h3>
                 <div class="art__body"><div><div class="art__desc"><p>Engineered airflow channels and premium coatings that keep your lenses clear through heavy exertion and variable weather.</p></div></div></div>
                 <span class="art__timer" aria-hidden="true"><i></i></span>
               </div>
               <div class="art__item">
                 <div class="art__media"><img src="assets/feature-4.jpg" alt="Close-up of a helmet with orange-strapped goggles" style="object-position: 50% 17%" width="1400" height="1400" loading="lazy" decoding="async"></div>
-                <h3 class="art__title">Impact-resistant durability</h3>
+                <h3 class="art__title"><button type="button">Impact-resistant durability</button></h3>
                 <div class="art__body"><div><div class="art__desc"><p>Scratch- and shatter-resistant lenses paired with flexible frames built to withstand the demands of mountain conditions.</p></div></div></div>
                 <span class="art__timer" aria-hidden="true"><i></i></span>
               </div>
               <div class="art__item">
                 <div class="art__media"><img src="assets/feature-5.jpg" alt="Skier in a white helmet and goggles holding a patterned board" style="object-position: 50% 26%" width="1400" height="1400" loading="lazy" decoding="async"></div>
-                <h3 class="art__title">Helmet compatibility &amp; comfort fit</h3>
+                <h3 class="art__title"><button type="button">Helmet compatibility &amp; comfort fit</button></h3>
                 <div class="art__body"><div><div class="art__desc"><p>Designed for seamless integration with ski helmets, featuring triple-layer face foam for all-day comfort and a secure fog-free fit.</p></div></div></div>
                 <span class="art__timer" aria-hidden="true"><i></i></span>
               </div>
