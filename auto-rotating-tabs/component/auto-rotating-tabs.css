@@ -30,7 +30,7 @@ auto-rotating-tabs *::after { box-sizing: border-box; }
 .art__item { display: flex; flex-direction: column; }
 .art__media {
   height: 320px; margin-bottom: 16px; overflow: hidden;
-  border-radius: var(--art-radius, 8px); background: var(--art-media-bg, #efeeeb);
+  border-radius: var(--art-radius, 0); background: var(--art-media-bg, #efeeeb);
 }
 .art__media img,
 .art__media svg {

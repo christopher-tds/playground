@@ -36,7 +36,7 @@ Every variable has a fallback, so it can be set anywhere (`:root`, a wrapper or 
 | `--art-bg` | `#fff` | Background |
 | `--art-border` | `#dcdcdc` | Row dividers |
 | `--art-media-bg` | `#efeeeb` | Shown while images load |
-| `--art-radius` | `8px` | Image corners |
+| `--art-radius` | `0` | Image corners |
 | `--art-control-bg`, `--art-control-color` | bg, text | Pause control |
 | `--art-focus-ms`, `--art-ease` | `900ms`, ease-out | Image transition |
 
