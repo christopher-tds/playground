@@ -46,6 +46,8 @@ auto-rotating-tabs *::after { box-sizing: border-box; }
 .art__desc { padding-top: 8px; font-size: 16px; line-height: 24px; font-weight: 350; }
 .art__desc > * { margin: 0; }
 .art__desc > * + * { margin-top: .75em; }
+/* Let the browser rewrap the last lines to avoid orphans, without narrowing the whole paragraph */
+.art__title, .art__desc { text-wrap: pretty; }
 .art__timer, .art__control { display: none; }
 
 @container (max-width: 699.98px) {
