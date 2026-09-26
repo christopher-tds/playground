@@ -1,0 +1,122 @@
+/*
+  Auto-rotating tabs
+  Self-contained: every style is scoped to <auto-rotating-tabs>, and nothing
+  touches :root or body. Brands tune it with the --art-* custom properties
+  (see README.md). The defaults live in var() fallbacks, so a theme can set
+  the variables anywhere (:root, a section wrapper, or the element itself).
+  Layout switches on the component's own width (container query), not the viewport.
+*/
+
+auto-rotating-tabs {
+  display: block;
+  container-type: inline-size;
+  background: var(--art-bg, #fff);
+  color: var(--art-text, #2c2a26);
+  font-family: var(--art-font, inherit);
+}
+
+auto-rotating-tabs *,
+auto-rotating-tabs *::before,
+auto-rotating-tabs *::after { box-sizing: border-box; }
+
+/* ---------- sm: stacked cards (default) ---------- */
+.art__inner { display: flex; flex-direction: column; gap: 32px; padding: 32px 16px; }
+.art__panel { display: flex; flex-direction: column; gap: 32px; }
+.art__heading {
+  margin: 0; font-family: var(--art-heading-font, inherit); font-weight: 700;
+  font-size: 24px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase;
+}
+.art__list { display: flex; flex-direction: column; gap: 32px; }
+.art__item { display: flex; flex-direction: column; }
+.art__media {
+  height: 320px; margin-bottom: 16px; overflow: hidden;
+  border-radius: var(--art-radius, 8px); background: var(--art-media-bg, #efeeeb);
+}
+.art__media img,
+.art__media svg {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  transition: opacity var(--art-focus-ms, 900ms) var(--art-ease, cubic-bezier(.22, .61, .36, 1)),
+              filter var(--art-focus-ms, 900ms) var(--art-ease, cubic-bezier(.22, .61, .36, 1));
+}
+.art__title { margin: 0; font: inherit; font-size: 16px; line-height: 28px; font-weight: 400; }
+.art__title button {
+  appearance: none; margin: 0; padding: 0; border: 0; background: none;
+  font: inherit; color: inherit; text-align: left; width: 100%; cursor: pointer;
+}
+.art__desc { padding-top: 8px; font-size: 16px; line-height: 24px; font-weight: 350; }
+.art__desc > * { margin: 0; }
+.art__desc > * + * { margin-top: .75em; }
+.art__timer, .art__control { display: none; }
+
+@container (max-width: 699.98px) {
+  /* Images come into focus as they scroll into view (JS adds .is-enhanced / .is-seen) */
+  auto-rotating-tabs.is-enhanced .art__item:not(.is-seen) .art__media img,
+  auto-rotating-tabs.is-enhanced .art__item:not(.is-seen) .art__media svg { opacity: .4; filter: blur(14px); }
+}
+
+/* ---------- lg: tab list left, media right ---------- */
+@container (min-width: 700px) {
+  .art__inner {
+    position: relative; flex-direction: row; gap: 0; padding: 24px;
+    min-height: 52.78cqi; /* 760px tall at a 1440px-wide container */
+  }
+  .art__panel {
+    flex: 0 0 calc((100% - 24px) / 2);
+    justify-content: space-between; align-items: flex-start;
+    padding: clamp(24px, 2.78cqi, 40px);
+  }
+  .art__list { width: 100%; max-width: 440px; gap: 0; }
+  /* Items stay unpositioned so each .art__media anchors to .art__inner */
+  .art__item {
+    padding-top: 24px; cursor: pointer;
+    border-bottom: 1px solid var(--art-border, #dcdcdc);
+  }
+  .art__item:first-child { border-top: 1px solid var(--art-border, #dcdcdc); }
+
+  /* Every tab's media sits in the right column; only the active one shows */
+  .art__media {
+    position: absolute; top: 24px; right: 24px; bottom: 24px;
+    width: calc((100% - 72px) / 2); height: auto; margin: 0;
+    opacity: 0;
+    transition: opacity var(--art-focus-ms, 900ms) var(--art-ease, cubic-bezier(.22, .61, .36, 1));
+  }
+  .art__media img, .art__media svg { filter: blur(18px); }
+  .art__item.is-active .art__media { opacity: 1; z-index: 1; }
+  .art__item.is-active .art__media img,
+  .art__item.is-active .art__media svg { filter: blur(0); }
+  .art__item.is-leaving .art__media { opacity: 0; z-index: 2; transition-duration: calc(var(--art-focus-ms, 900ms) * .75); }
+  .art__item.is-leaving .art__media img,
+  .art__item.is-leaving .art__media svg { filter: blur(18px); transition-duration: calc(var(--art-focus-ms, 900ms) * .75); }
+
+  .art__title { font-size: 20px; line-height: 28px; opacity: .24; transition: opacity .35s ease; }
+  .art__item:hover .art__title { opacity: .55; }
+  .art__item.is-active .art__title { opacity: 1; }
+
+  .art__body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .5s var(--art-ease, cubic-bezier(.22, .61, .36, 1)); }
+  .art__item.is-active .art__body { grid-template-rows: 1fr; }
+  .art__body > div { overflow: hidden; }
+  .art__desc { opacity: 0; transform: translateY(4px); transition: opacity .35s ease, transform .5s var(--art-ease, cubic-bezier(.22, .61, .36, 1)); }
+  .art__item.is-active .art__desc { opacity: 1; transform: none; transition-delay: .12s; }
+
+  /* The timer sits on the row's bottom border: in flow, pulled down over it */
+  .art__timer { display: block; height: 1px; margin-top: 24px; margin-bottom: -1px; overflow: hidden; pointer-events: none; }
+  .art__timer i { display: block; height: 100%; background: var(--art-text, #2c2a26); transform: scaleX(0); transform-origin: left; will-change: transform; }
+
+  .art__control:not([hidden]) {
+    display: grid; place-items: center;
+    position: absolute; right: 40px; bottom: 40px; z-index: 3;
+    width: 48px; height: 48px; padding: 12px; border: 0; border-radius: 999px; cursor: pointer;
+    background: var(--art-control-bg, var(--art-bg, #fff)); color: var(--art-control-color, var(--art-text, #2c2a26));
+  }
+  .art__control svg { display: block; width: 24px; height: 24px; }
+}
+
+.art__title button:focus-visible,
+.art__control:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .art__media, .art__media img, .art__media svg, .art__body, .art__desc { transition: none !important; }
+  .art__media img, .art__media svg { filter: none !important; }
+  auto-rotating-tabs.is-enhanced .art__item:not(.is-seen) .art__media img,
+  auto-rotating-tabs.is-enhanced .art__item:not(.is-seen) .art__media svg { opacity: 1; }
+}
