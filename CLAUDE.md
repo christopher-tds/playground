@@ -4,7 +4,7 @@ Design explorations, published with GitHub Pages.
 
 ## Convention
 
-- **One folder per exploration:** kebab-case, at the repo root (e.g. `key-features-carousel/`).
+- **One folder per exploration:** kebab-case, at the repo root (e.g. `auto-rotating-tabs/`).
 - **Each folder is self-contained:** it has its own `index.html`, its assets live inside the folder, and every path is relative (`assets/image.jpg`, never `/assets/...`).
 - **The root `index.html` lists them all:** whenever you add a folder, add a link to it in the root `index.html` list, labeled with the exploration's name.
 - Keep the root index plain and simple. No build step, no frameworks.
