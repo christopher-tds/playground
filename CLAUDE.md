@@ -24,6 +24,8 @@ Every component should drop into any Liquid theme in the portfolio (BSC, GO, PM,
   README.md         dev handoff: files, per-theme install, variables, behavior
 ```
 
+**Code panel:** every preview page gets the shared "Code" button next to Desktop/Mobile. It opens a drawer showing the README, the Liquid section, and the component CSS/JS. Include `../_shared/dev-panel.css` and `../_shared/dev-panel.js`, add a `<button class="dev-btn" data-dev-panel>` with the code icon, and list the files in a `<script type="application/json" id="dev-files">` block (see `auto-rotating-tabs/index.html`). `_shared/` holds playground chrome only, never component code, and isn't listed on the root index.
+
 **Checklist**
 
 - **Content lives in the markup:** JS only adds behavior on top. Repeating items are section blocks, and the page must still read sensibly without JS.

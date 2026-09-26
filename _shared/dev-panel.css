@@ -1,0 +1,62 @@
+/* Playground preview chrome: "Code" button + developer files drawer. Not part of any component. */
+.dev-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border: 1px solid #cfccc6; border-radius: 999px; background: transparent;
+  font: 500 13px/1.2 inherit; font-family: inherit; color: #6f6b64; cursor: pointer;
+}
+.dev-btn:hover, .dev-btn[aria-expanded="true"] { color: #2c2a26; border-color: #aeaaa2; }
+.dev-btn svg { width: 15px; height: 15px; }
+.dev-btn:focus-visible, .dev-panel button:focus-visible, .dev-panel a:focus-visible { outline: 2px solid #2c2a26; outline-offset: 2px; }
+
+.dev-panel { position: fixed; inset: 0; z-index: 1000; display: flex; justify-content: flex-end; }
+.dev-panel[hidden] { display: none; }
+.dev-panel__backdrop { position: absolute; inset: 0; background: rgba(29, 28, 26, .32); border: 0; padding: 0; cursor: default; }
+.dev-panel__sheet {
+  position: relative; display: flex; flex-direction: column;
+  width: min(760px, 100%); height: 100%; background: #fff; color: #2c2a26;
+  box-shadow: -12px 0 40px -12px rgba(44, 42, 38, .3);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.dev-panel__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px 0; }
+.dev-panel__title { margin: 0; font-size: 16px; font-weight: 500; }
+.dev-panel__close { width: 32px; height: 32px; border: 0; border-radius: 999px; background: none; cursor: pointer; display: grid; place-items: center; color: #6f6b64; }
+.dev-panel__close:hover { background: #f1f0ed; color: #2c2a26; }
+.dev-panel__close svg { width: 18px; height: 18px; }
+
+.dev-panel__tabs { display: flex; gap: 4px; padding: 14px 20px 0; border-bottom: 1px solid #e6e4df; overflow-x: auto; scrollbar-width: none; }
+.dev-panel__tabs::-webkit-scrollbar { display: none; }
+.dev-panel__tab {
+  flex: none; padding: 8px 12px 10px; border: 0; border-bottom: 2px solid transparent; background: none;
+  font: 500 13px/1.2 inherit; font-family: inherit; color: #6f6b64; cursor: pointer; white-space: nowrap;
+}
+.dev-panel__tab:hover { color: #2c2a26; }
+.dev-panel__tab[aria-selected="true"] { color: #2c2a26; border-bottom-color: #2c2a26; }
+
+.dev-panel__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #efeeeb; }
+.dev-panel__path { font: 500 12px/1.4 ui-monospace, "SF Mono", Menlo, monospace; color: #6f6b64; overflow-wrap: anywhere; }
+.dev-panel__actions { display: flex; gap: 8px; flex: none; }
+.dev-panel__action {
+  display: inline-flex; align-items: center; padding: 6px 12px; border: 1px solid #dcdcdc; border-radius: 999px;
+  background: #fff; font: 500 12px/1.2 inherit; font-family: inherit; color: #2c2a26; text-decoration: none; cursor: pointer;
+}
+.dev-panel__action:hover { background: #f7f6f3; }
+
+.dev-panel__body { flex: 1; overflow: auto; overscroll-behavior: contain; }
+.dev-panel__body pre[class*="language-"] {
+  margin: 0; padding: 16px 20px 40px; background: #fbfaf8; border-radius: 0;
+  font: 12.5px/1.6 ui-monospace, "SF Mono", Menlo, monospace; tab-size: 2;
+}
+.dev-panel__body code[class*="language-"] { font: inherit; text-shadow: none; }
+.dev-panel__doc { padding: 8px 24px 40px; font-size: 14px; line-height: 1.6; }
+.dev-panel__doc h1 { font-size: 20px; font-weight: 500; margin: 16px 0 8px; }
+.dev-panel__doc h2 { font-size: 15px; font-weight: 600; margin: 28px 0 8px; }
+.dev-panel__doc table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+.dev-panel__doc th, .dev-panel__doc td { text-align: left; vertical-align: top; padding: 8px 10px 8px 0; border-bottom: 1px solid #efeeeb; }
+.dev-panel__doc th { font-weight: 600; }
+.dev-panel__doc code { font: 12px ui-monospace, "SF Mono", Menlo, monospace; background: #f3f2ef; padding: 1px 5px; border-radius: 4px; }
+.dev-panel__doc pre { background: #fbfaf8; padding: 12px 14px; border-radius: 6px; overflow: auto; }
+.dev-panel__doc pre code { background: none; padding: 0; }
+.dev-panel__doc ul { padding-left: 20px; }
+.dev-panel__msg { padding: 20px; color: #6f6b64; font-size: 13px; }
+
+body.dev-panel-open { overflow: hidden; }
