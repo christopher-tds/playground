@@ -17,7 +17,7 @@ Explorations are **behavior specs with a working reference implementation**, not
 
 ```
 <exploration>/
-  index.html        preview page only (header, viewport toggle, sample content)
+  index.html        preview page only (header with "← Playground" link to ../, viewport toggle, sample content)
   component/        reference implementation: <name>.css + <name>.js
   shopify/          reference section: markup contract, schema, settings, blocks
   assets/           sample media for the preview
