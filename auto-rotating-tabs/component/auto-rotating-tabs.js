@@ -8,6 +8,8 @@
     data-interval="6"         seconds per tab
     data-autoplay="false"     start paused (autoplay is also off under reduced motion)
     data-label-pause / -play  control labels, so themes can pass translated strings
+    data-sm-layout="carousel" narrow layout as a swipeable row with prev/next arrows
+                              (default "stack": every card in a column)
 */
 if (!customElements.get('auto-rotating-tabs')) {
   const LG_MIN = 700; // matches the @container breakpoint in the CSS
@@ -16,6 +18,12 @@ if (!customElements.get('auto-rotating-tabs')) {
   let uid = 0;
 
   class AutoRotatingTabs extends HTMLElement {
+    static observedAttributes = ['data-sm-layout'];
+
+    attributeChangedCallback() {
+      if (this.items?.length) this.syncCarousel();
+    }
+
     connectedCallback() {
       if (!this.items) this.init();
       if (!this.items.length) return;
@@ -51,6 +59,9 @@ if (!customElements.get('auto-rotating-tabs')) {
       this.active = Math.max(0, this.items.findIndex(item => item.classList.contains('is-active')));
       this.list = this.querySelector('.art__list');
       this.control = this.querySelector('.art__control');
+      this.arrows = this.querySelector('.art__arrows');
+      this.prevBtn = this.querySelector('.art__arrow--prev');
+      this.nextBtn = this.querySelector('.art__arrow--next');
       this.bars = this.items.map(item => item.querySelector('.art__timer i'));
       this.buttons = this.items.map((item, i) => {
         const body = item.querySelector('.art__body');
@@ -60,7 +71,10 @@ if (!customElements.get('auto-rotating-tabs')) {
         return button;
       });
 
-      this.resizeObserver = new ResizeObserver(([entry]) => this.setLayout(entry.contentRect.width >= LG_MIN));
+      this.resizeObserver = new ResizeObserver(([entry]) => {
+        this.setLayout(entry.contentRect.width >= LG_MIN);
+        this.updateArrows();
+      });
       this.visibilityObserver = new IntersectionObserver(([entry]) => {
         this.visible = entry.isIntersecting;
         this.update();
@@ -87,6 +101,9 @@ if (!customElements.get('auto-rotating-tabs')) {
       this[method]('focusin', this.onFocus);
       this[method]('focusout', this.onFocus);
       this.control?.[method]('click', this.onControl);
+      this.prevBtn?.[method]('click', this.onArrow);
+      this.nextBtn?.[method]('click', this.onArrow);
+      this.list[method]('scroll', this.onListScroll, { passive: true });
       document[method]('visibilitychange', this.onVisibility);
       document[method]('shopify:block:select', this.onBlockSelect);
       document[method]('shopify:block:deselect', this.onBlockSelect);
@@ -136,7 +153,35 @@ if (!customElements.get('auto-rotating-tabs')) {
       this.elapsed = 0;
       this.render();
       this.update();
+      this.syncCarousel();
     }
+
+    get carousel() {
+      return this.lg === false && this.dataset.smLayout === 'carousel';
+    }
+
+    /* The arrows exist only in the narrow carousel layout */
+    syncCarousel() {
+      if (this.arrows) this.arrows.hidden = !this.carousel;
+      if (!this.carousel) this.list.scrollLeft = 0;
+      this.updateArrows();
+    }
+
+    updateArrows() {
+      if (!this.carousel || !this.prevBtn || !this.nextBtn) return;
+      const max = this.list.scrollWidth - this.list.clientWidth;
+      this.prevBtn.disabled = this.list.scrollLeft <= 1;
+      this.nextBtn.disabled = this.list.scrollLeft >= max - 1;
+    }
+
+    /* One card per press: card width plus the gap */
+    onArrow = e => {
+      const dir = e.currentTarget === this.nextBtn ? 1 : -1;
+      const step = this.items[0].offsetWidth + (parseFloat(getComputedStyle(this.list).columnGap) || 0);
+      this.list.scrollBy({ left: dir * step, behavior: this.reduceMotion ? 'auto' : 'smooth' });
+    };
+
+    onListScroll = () => this.updateArrows();
 
     go(i) {
       if (i === this.active) { this.elapsed = 0; return; }

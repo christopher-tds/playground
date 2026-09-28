@@ -6,7 +6,9 @@ A behavior spec with a working reference implementation. It isn't drop-in theme 
 
 - **Wide layout** (component ≥ 700px): a tab list on the left and one large image on the right. The open row shows its description and a timer line. The image changes with a blur-to-focus transition.
 - **Rotation:** advances every *n* seconds (6 by default) and loops. Clicking a row jumps to it, and the timer restarts from there.
-- **Narrow layout** (< 700px): every tab is shown as a stacked card (image, title, description). There's no rotation, and each image comes into focus as it scrolls into view.
+- **Narrow layout** (< 700px), one of two options set by the "Mobile layout" setting. Neither rotates, and each image comes into focus as it scrolls into view:
+  - **Stacked:** every tab is a card (image, title, description) in one column.
+  - **Carousel:** the cards sit in one row that swipes sideways. They're 320px wide at a 390px screen, with the next card peeking in. Prev/next arrows beside the heading move one card at a time and fade out at either end.
 - **Stops rotating when:**
   - the viewer presses the pause control
   - keyboard focus is on a tab
@@ -23,6 +25,7 @@ A behavior spec with a working reference implementation. It isn't drop-in theme 
 | Heading | text | Key features |
 | Seconds per tab | range, 3–12 | 6 |
 | Rotate automatically | checkbox | on |
+| Mobile layout | select: Stacked, Carousel | Stacked |
 | **Tab** block: image, title, description | image, text, richtext | max 8 blocks |
 
 ## Brand variables
@@ -55,7 +58,8 @@ Every variable has a fallback, so it can be set anywhere (`:root`, a wrapper or 
 - **Images:**
   - `widths` and `sizes` in the reference are placeholders. Derive them from the theme's page width, breakpoints and image aspect ratio (note the layout switches on the component's width, not the viewport's).
   - Choose eager or lazy loading by where the section sits on the page.
-- **Translations:** pass the theme's own strings to `data-label-pause` and `data-label-play`. PM and GO already have `accessibility.pause_slideshow` and `accessibility.play_slideshow`.
+- **Arrow icon:** the preview uses the arrow from the Figma (`assets/arrow-next.svg`; the prev button shows it unrotated). In a theme, swap in the theme's own icon snippet.
+- **Translations:** pass the theme's own strings to `data-label-pause` and `data-label-play`, and to the arrows' "Previous"/"Next" labels. PM and GO already have `accessibility.pause_slideshow` and `accessibility.play_slideshow`.
 - **Color schemes:** add a `color_scheme` setting where the theme uses them, and map it to the `--art-*` variables.
 
 ## What has been checked

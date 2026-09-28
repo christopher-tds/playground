@@ -13,14 +13,28 @@
   id="AutoRotatingTabs-{{ section.id }}"
   data-interval="{{ section.settings.interval }}"
   data-autoplay="{{ section.settings.autoplay }}"
+  data-sm-layout="{{ section.settings.sm_layout }}"
   data-label-pause="Pause"
   data-label-play="Play"
 >
   <div class="art__inner">
     <div class="art__panel">
-      {%- if section.settings.heading != blank -%}
-        <h2 class="art__heading">{{ section.settings.heading | escape }}</h2>
-      {%- endif -%}
+      <div class="art__head">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="art__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.sm_layout == 'carousel' -%}
+          {%- comment -%} Swap the arrow image for the theme's own icon snippet {%- endcomment -%}
+          <div class="art__arrows" hidden>
+            <button type="button" class="art__arrow art__arrow--prev" aria-label="Previous">
+              <img src="{{ 'auto-rotating-tabs-arrow.svg' | asset_url }}" alt="" width="24" height="24">
+            </button>
+            <button type="button" class="art__arrow art__arrow--next" aria-label="Next">
+              <img src="{{ 'auto-rotating-tabs-arrow.svg' | asset_url }}" alt="" width="24" height="24">
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
       <div class="art__list">
         {%- for block in section.blocks -%}
           <div class="art__item{% if forloop.first %} is-active{% endif %}" {{ block.shopify_attributes }}>
@@ -86,6 +100,17 @@
       "label": "Rotate automatically",
       "info": "Always off for visitors who have reduced motion turned on.",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "sm_layout",
+      "label": "Mobile layout",
+      "info": "Applies when the section is narrower than 700px.",
+      "options": [
+        { "value": "stack", "label": "Stacked" },
+        { "value": "carousel", "label": "Carousel" }
+      ],
+      "default": "stack"
     }
   ],
   "blocks": [

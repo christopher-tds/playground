@@ -22,6 +22,7 @@ auto-rotating-tabs *::after { box-sizing: border-box; }
 /* ---------- sm: stacked cards (default) ---------- */
 .art__inner { display: flex; flex-direction: column; gap: 32px; padding: 32px 16px; }
 .art__panel { display: flex; flex-direction: column; gap: 32px; }
+.art__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .art__heading {
   margin: 0; font-family: var(--art-heading-font, inherit); font-weight: 700;
   font-size: 24px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase;
@@ -48,13 +49,37 @@ auto-rotating-tabs *::after { box-sizing: border-box; }
 .art__desc > * + * { margin-top: .75em; }
 /* Let the browser rewrap the last lines to avoid orphans, without narrowing the whole paragraph */
 .art__title, .art__desc { text-wrap: pretty; }
-.art__timer, .art__control { display: none; }
+.art__timer, .art__control, .art__arrows { display: none; }
 
 @container (max-width: 699.98px) {
   /* Images come into focus as they scroll into view (JS adds .is-enhanced / .is-seen) */
   auto-rotating-tabs.is-enhanced .art__item:not(.is-seen) .art__media img,
   auto-rotating-tabs.is-enhanced .art__item:not(.is-seen) .art__media svg { opacity: .4; filter: blur(14px); }
 }
+
+/* ---------- sm carousel (data-sm-layout="carousel"): one row of cards that swipes sideways ---------- */
+@container (max-width: 699.98px) {
+  auto-rotating-tabs[data-sm-layout="carousel"] .art__arrows:not([hidden]) { display: flex; gap: 16px; }
+  auto-rotating-tabs[data-sm-layout="carousel"] .art__list {
+    flex-direction: row; gap: 24px;
+    /* Bleed to the component edges so cards scroll under the side padding */
+    margin-inline: -16px; padding-inline: 16px; scroll-padding-inline: 16px;
+    overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  auto-rotating-tabs[data-sm-layout="carousel"] .art__list::-webkit-scrollbar { display: none; }
+  /* 320px cards at the 390px reference width; 38px narrower than the row so the next card always peeks */
+  auto-rotating-tabs[data-sm-layout="carousel"] .art__item { flex: 0 0 min(320px, calc(100% - 38px)); scroll-snap-align: start; }
+  auto-rotating-tabs[data-sm-layout="carousel"] .art__media { height: auto; aspect-ratio: 4 / 5; }
+}
+.art__arrow {
+  appearance: none; display: grid; place-items: center; width: 24px; height: 24px; margin: 0; padding: 0;
+  border: 0; background: none; color: inherit; cursor: pointer;
+}
+.art__arrow img, .art__arrow svg { display: block; width: 24px; height: 24px; }
+.art__arrow--next img, .art__arrow--next svg { transform: rotate(180deg); }
+.art__arrow:disabled { opacity: .24; cursor: default; }
+.art__arrow:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 
 /* ---------- lg: tab list left, media right ---------- */
 @container (min-width: 700px) {

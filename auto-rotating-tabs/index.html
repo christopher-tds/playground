@@ -42,7 +42,15 @@
   .seg svg { width: 15px; height: 15px; }
   .seg button:focus-visible { outline: 2px solid var(--ui-text); outline-offset: 2px; }
 
-  .stage { width: 100%; max-width: 1440px; margin-inline: auto; display: flex; justify-content: center; }
+  .stage { width: 100%; max-width: 1440px; margin-inline: auto; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 16px 32px; }
+  /* Mobile layout options: a small list beside the phone */
+  .variants { display: flex; flex-direction: column; gap: 2px; min-width: 132px; padding-top: 4px; }
+  .variants[hidden] { display: none; }
+  .variants__label { margin: 0 0 6px 12px; font-weight: 500; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ui-muted); }
+  .variants button { border: 0; background: none; padding: 7px 12px; border-radius: 999px; text-align: left; font-size: 13px; font-weight: 500; color: var(--ui-muted); cursor: pointer; }
+  .variants button:hover { color: var(--ui-text); }
+  .variants button[aria-pressed="true"] { background: var(--ui-surface); color: var(--ui-text); box-shadow: 0 1px 2px rgba(44,42,38,.12); }
+  .variants button:focus-visible { outline: 2px solid var(--ui-text); outline-offset: 2px; }
   .frame { background: var(--ui-surface); box-shadow: 0 1px 2px rgba(44,42,38,.06), 0 12px 40px -12px rgba(44,42,38,.18); overflow: hidden; }
   .frame--desktop { width: 100%; }
   .frame--desktop .scaler { width: 1440px; transform-origin: 0 0; }
@@ -84,13 +92,24 @@
   </header>
 
   <div class="stage">
+    <div class="variants" role="group" aria-labelledby="variants-label" id="variants" hidden>
+      <p class="variants__label" id="variants-label">Mobile layout</p>
+      <button type="button" data-sm="stack" aria-pressed="true">Stacked</button>
+      <button type="button" data-sm="carousel" aria-pressed="false">Carousel</button>
+    </div>
     <div class="frame frame--desktop" id="frame">
       <div class="scaler" id="scaler">
         <!-- Component markup: the contract shopify/section-auto-rotating-tabs.liquid renders -->
-        <auto-rotating-tabs data-interval="6" data-label-pause="Pause" data-label-play="Play">
+        <auto-rotating-tabs data-interval="6" data-sm-layout="stack" data-label-pause="Pause" data-label-play="Play">
           <div class="art__inner">
             <div class="art__panel">
-              <h2 class="art__heading">Key Features</h2>
+              <div class="art__head">
+                <h2 class="art__heading">Key Features</h2>
+                <div class="art__arrows" hidden>
+                  <button type="button" class="art__arrow art__arrow--prev" aria-label="Previous"><img src="assets/arrow-next.svg" alt="" width="24" height="24"></button>
+                  <button type="button" class="art__arrow art__arrow--next" aria-label="Next"><img src="assets/arrow-next.svg" alt="" width="24" height="24"></button>
+                </div>
+              </div>
               <div class="art__list">
               <div class="art__item is-active">
                 <div class="art__media"><img src="assets/feature-1.jpg" alt="Skier in a helmet and mirrored goggles holding a snowboard" style="object-position: 50% 14%" width="1400" height="1400" loading="lazy" decoding="async"></div>
@@ -155,8 +174,21 @@
   const buttons = [...document.querySelectorAll("[data-view]")];
   const NOTES = {
     desktop: "Each feature holds for 6 seconds. The line under the open row is the timer. Click a row to jump to it; the timer keeps running from there.",
-    mobile: "Mobile stacks all five features, following the sm frame. Scroll inside the phone; each image comes into focus as it enters view."
+    stack: "Stacked: all five features in a column. Scroll inside the phone; each image comes into focus as it enters view.",
+    carousel: "Carousel: swipe sideways or use the arrows. The next card peeks in from the right, and the arrows fade out at either end."
   };
+  const tabs = document.querySelector("auto-rotating-tabs");
+  const variants = document.getElementById("variants");
+  const smButtons = [...variants.querySelectorAll("[data-sm]")];
+  let sm = "stack";
+  function setSm(v) {
+    sm = v;
+    tabs.dataset.smLayout = v;
+    smButtons.forEach(b => b.setAttribute("aria-pressed", b.dataset.sm === v));
+    if (view === "mobile") note.textContent = NOTES[v];
+    scaler.scrollTop = 0;
+  }
+  smButtons.forEach(b => b.addEventListener("click", () => setSm(b.dataset.sm)));
   let view = "desktop";
 
   function fit() {
@@ -170,7 +202,8 @@
     view = v;
     buttons.forEach(b => b.setAttribute("aria-pressed", b.dataset.view === v));
     frame.className = "frame frame--" + v;
-    note.textContent = NOTES[v];
+    note.textContent = v === "mobile" ? NOTES[sm] : NOTES.desktop;
+    variants.hidden = v !== "mobile";
     if (v === "desktop") fit();
     else { scaler.style.transform = ""; frame.style.height = ""; scaler.scrollTop = 0; }
     try { history.replaceState(null, "", "#" + v); } catch (e) {}
