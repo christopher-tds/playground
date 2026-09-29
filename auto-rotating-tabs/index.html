@@ -51,6 +51,14 @@
   .variants button:hover { color: var(--ui-text); }
   .variants button[aria-pressed="true"] { background: var(--ui-surface); color: var(--ui-text); box-shadow: 0 1px 2px rgba(44,42,38,.12); }
   .variants button:focus-visible { outline: 2px solid var(--ui-text); outline-offset: 2px; }
+  .variants__options { display: flex; flex-direction: column; gap: 2px; }
+  /* Narrow screens: a left-aligned row above the phone, styled like the Desktop/Mobile toggle */
+  @media (max-width: 640px) {
+    .variants { width: 100%; align-items: flex-start; gap: 8px; padding-top: 0; }
+    .variants__label { margin: 0; }
+    .variants__options { flex-direction: row; gap: 0; background: #dddbd6; border-radius: 999px; padding: 3px; }
+    .variants button { padding: 7px 16px; }
+  }
   .frame { background: var(--ui-surface); box-shadow: 0 1px 2px rgba(44,42,38,.06), 0 12px 40px -12px rgba(44,42,38,.18); overflow: hidden; }
   .frame--desktop { width: 100%; }
   .frame--desktop .scaler { width: 1440px; transform-origin: 0 0; }
@@ -94,8 +102,10 @@
   <div class="stage">
     <div class="variants" role="group" aria-labelledby="variants-label" id="variants" hidden>
       <p class="variants__label" id="variants-label">Mobile layout</p>
-      <button type="button" data-sm="stack" aria-pressed="true">Stacked</button>
-      <button type="button" data-sm="carousel" aria-pressed="false">Carousel</button>
+      <div class="variants__options">
+        <button type="button" data-sm="stack" aria-pressed="true">Stacked</button>
+        <button type="button" data-sm="carousel" aria-pressed="false">Carousel</button>
+      </div>
     </div>
     <div class="frame frame--desktop" id="frame">
       <div class="scaler" id="scaler">
