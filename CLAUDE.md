@@ -7,6 +7,7 @@ Design explorations, published with GitHub Pages.
 - **One folder per exploration:** kebab-case, at the repo root (e.g. `auto-rotating-tabs/`).
 - **Each folder is self-contained:** it has its own `index.html`, its assets live inside the folder, and every path is relative (`assets/image.jpg`, never `/assets/...`).
 - **The root `index.html` lists them all:** whenever you add a folder, add a link to it in the root `index.html` list, labeled with the exploration's name.
+- **Groups:** the index lists explorations under group headings (`Media`, `Interactions`). Put a new entry under the right group, or add a group. The preview page's `<title>` and header title carry the group as a prefix: `Media / Auto-Rotating Tabs`, with the group in a muted `.bar__group` span.
 - Keep the root index plain and simple. No build step, no frameworks.
 
 ## Reference-component conventions
