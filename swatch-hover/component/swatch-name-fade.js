@@ -6,6 +6,9 @@
   color. Each change slides the new name up into place while the old one
   slides up and out (jacquemus.com PDP: 16px, 300ms).
 
+  Each change also fires a bubbling `swatch-preview` event with
+  { color, swatch }, so the page can swap the product image to match.
+
   Markup contract (matches product-sections-cta-menu-color-swatches.liquid):
     <swatch-name-fade>
       <div class="pdp-colorswatch">
@@ -88,6 +91,9 @@
       next.classList.add("is-in");
       next.removeAttribute("aria-hidden");
       this.front = 1 - this.front;
+
+      const swatch = [...this.list.querySelectorAll("[data-color]")].find(s => s.dataset.color === name) || null;
+      this.dispatchEvent(new CustomEvent("swatch-preview", { bubbles: true, detail: { color: name, swatch } }));
     }
   }
 

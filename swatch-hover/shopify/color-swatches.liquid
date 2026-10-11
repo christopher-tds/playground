@@ -1,7 +1,8 @@
 {%- comment -%}
   Excerpt of theme/snippets/product-sections-cta-menu-color-swatches.liquid
-  (ts-shopify-theme at 16b3d25d5). The only proposed markup change is the
-  <swatch-name-fade> wrapper around the existing container. Everything inside
+  (ts-shopify-theme at 16b3d25d5). Proposed markup changes: the <swatch-name-fade>
+  wrapper around the existing container, and dropping the group label
+  ({{ colorswatchLabel }}, e.g. "Essentials") before the color name. Everything else
   is unchanged: the element reads data-color, data-initial and
   [data-selected-color-title], which the snippet already renders.
 
@@ -20,7 +21,7 @@
     <div{% if id %} id="{{ id }}"{% endif %}
       class="pdp-colorswatch" data-color-swatches-container>
       <h5 class="selected-color-title">
-        <span>{{ colorswatchLabel }}</span><span data-selected-color-title class="selected-color-title__color" data-initial="{{ colorTitle }}">{{ colorTitle }}</span>
+        <span data-selected-color-title class="selected-color-title__color" data-initial="{{ colorTitle }}">{{ colorTitle }}</span>
       </h5>
       <div class="product-color-options-wrapper">
         <ul class="product-color-options">

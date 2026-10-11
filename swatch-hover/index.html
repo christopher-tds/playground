@@ -6,7 +6,7 @@
 <title>Interactions / Swatch Hover / Jack</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,300&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
 <!-- The component (reference implementation) -->
 <link rel="stylesheet" href="component/swatch-name-fade.css">
 <script src="component/swatch-name-fade.js" defer></script>
@@ -43,11 +43,9 @@
 
   /* ---------- Taylor Stitch PDP, recreated (sample brand mapping) ----------
      Measured from taylorstitch.com/products/jack-in-washed-indigo-oxford-2501.
-     Orbikular and National 2 are licensed: Source Serif 4 and Inter stand in. */
+     National 2 is licensed: Inter stands in. */
   .ts-pdp {
     --ts-brand: #0f2130;
-    --ts-grey-60: #737577;
-    --ts-alternate: #a09473;
     display: grid;
     grid-template-columns: minmax(0, 560px) 435px;   /* TS buy box column is 435px at 1440 */
     justify-content: center;
@@ -62,22 +60,17 @@
   }
   .ts-pdp__media { margin: 0; background: #f2f2f2; aspect-ratio: 908 / 1135; }
   .ts-pdp__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .ts-pdp__title { margin: 0 0 40px; font-family: "Source Serif 4", Georgia, serif; font-weight: 300; font-size: 42px; line-height: 51px; letter-spacing: -.045em; }
-  .ts-pdp__title small { display: block; font-size: inherit; }
 
   .pdp-colorswatch { display: flex; flex-direction: column; gap: 12px; }
-  .selected-color-title { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 400; }
-  .selected-color-title span:first-child { font-size: 12px; line-height: 1.2; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ts-grey-60); }
-  .selected-color-title__color { font-size: 14px; line-height: 1; color: var(--ts-brand); }
-  .product-color-options { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; margin: 0; padding: 0; list-style: none; }
-  .product-color-options li { flex: 0 0 40px; width: 40px; height: 40px; }
-  /* TS ring states, with a solid fill standing in for the swatch photo */
-  .color-option { display: block; width: 40px; height: 40px; border: 3px solid #fff; border-radius: 50%; }
-  .color-option__fill { display: block; width: 100%; height: 100%; border-radius: 50%; border: 1px solid var(--ts-brand); background: var(--swatch); }
-  .color-option:hover, .color-option:focus-visible { border: 2px solid var(--ts-alternate); outline: none; }
-  .color-option:hover .color-option__fill, .color-option:focus-visible .color-option__fill { border-color: #fff; }
-  .color-option.color-option--selected { cursor: default; border: 2px solid var(--ts-brand); }
-  .color-option.color-option--selected .color-option__fill { border-color: #fff; }
+  .selected-color-title { margin: 0; font-weight: 400; font-size: 14px; line-height: 1; color: var(--ts-brand); }
+  .product-color-options { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; padding: 0 0 6px; list-style: none; }
+  /* Square swatches with a line under the selected one (Jacquemus: 20px squares,
+     a 1px line 5px below; scaled to 32px). Solid fills stand in for swatch photos. */
+  .color-option { position: relative; display: block; width: 32px; height: 32px; background: var(--swatch); }
+  .color-option--light { box-shadow: inset 0 0 0 1px rgba(15, 33, 48, .14); }
+  .color-option--selected { cursor: default; }
+  .color-option--selected::after { content: ""; position: absolute; left: 0; right: 0; top: calc(100% + 5px); height: 1px; background: var(--ts-brand); }
+  .color-option:focus-visible { outline: 1px solid var(--ts-brand); outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -101,19 +94,17 @@
           <img id="pdp-image" src="assets/jack-washed-indigo-oxford.jpg" alt="The Jack in Washed Indigo Oxford, folded" width="908" height="1135">
         </figure>
         <div class="ts-pdp__info">
-          <h1 class="ts-pdp__title">The Jack <small>in <span id="pdp-color">Washed Indigo Oxford</span></small></h1>
-
           <!-- Component markup: the contract product-sections-cta-menu-color-swatches.liquid renders, wrapped in the element -->
           <swatch-name-fade>
             <div class="pdp-colorswatch" data-color-swatches-container>
               <h5 class="selected-color-title">
-                <span>Essentials</span><span data-selected-color-title class="selected-color-title__color" data-initial="Washed Indigo Oxford">Washed Indigo Oxford</span>
+                <span data-selected-color-title class="selected-color-title__color" data-initial="Washed Indigo Oxford">Washed Indigo Oxford</span>
               </h5>
               <ul class="product-color-options">
                 <!-- Fills sampled from the lit areas of each product photo -->
-                <li><a href="#" data-color="Washed Indigo Oxford" data-image="assets/jack-washed-indigo-oxford.jpg" class="color-option color-option--selected" aria-current="true" aria-label="Washed Indigo Oxford" style="--swatch: #9db0c1"><span class="color-option__fill"></span></a></li>
-                <li><a href="#" data-color="White Everyday Oxford" data-image="assets/jack-white-everyday-oxford.jpg" class="color-option" aria-label="White Everyday Oxford" style="--swatch: #efedeb"><span class="color-option__fill"></span></a></li>
-                <li><a href="#" data-color="Smoked Olive Oxford" data-image="assets/jack-smoked-olive-oxford.jpg" class="color-option" aria-label="Smoked Olive Oxford" style="--swatch: #857e6d"><span class="color-option__fill"></span></a></li>
+                <li><a href="#" data-color="Washed Indigo Oxford" data-image="assets/jack-washed-indigo-oxford.jpg" class="color-option color-option--selected" aria-current="true" aria-label="Washed Indigo Oxford" style="--swatch: #9db0c1"></a></li>
+                <li><a href="#" data-color="White Everyday Oxford" data-image="assets/jack-white-everyday-oxford.jpg" class="color-option color-option--light" aria-label="White Everyday Oxford" style="--swatch: #efedeb"></a></li>
+                <li><a href="#" data-color="Smoked Olive Oxford" data-image="assets/jack-smoked-olive-oxford.jpg" class="color-option" aria-label="Smoked Olive Oxford" style="--swatch: #857e6d"></a></li>
               </ul>
             </div>
           </swatch-name-fade>
@@ -122,7 +113,7 @@
     </div>
   </div>
 
-  <p class="note">Hover a swatch: its name slides up into the label, and moving off the swatches brings back the selected color. Click a swatch to select it. On Taylor Stitch each swatch links to that color's product page.</p>
+  <p class="note">Hover a swatch: its name slides up into the label and the photo switches to that color. Moving off the swatches brings back the selected color. Click a swatch to select it. On Taylor Stitch each swatch links to that color's product page.</p>
 </div>
 
 <script type="application/json" id="dev-files">
@@ -135,12 +126,19 @@
 </script>
 
 <script>
-/* Preview page only: clicking a swatch selects it in place instead of loading
-   its product page. The component only needs data-initial kept up to date. */
+/* Preview page only: the photo follows the component's swatch-preview event,
+   and clicking a swatch selects it in place instead of loading its product
+   page. The component only needs data-initial kept up to date. */
 (() => {
   const label = document.querySelector("[data-selected-color-title]");
   const image = document.getElementById("pdp-image");
-  const title = document.getElementById("pdp-color");
+  const setImage = swatch => {
+    image.src = swatch.dataset.image;
+    image.alt = `The Jack in ${swatch.dataset.color}, folded`;
+  };
+  document.querySelector("swatch-name-fade").addEventListener("swatch-preview", e => {
+    if (e.detail.swatch) setImage(e.detail.swatch);
+  });
   document.querySelectorAll(".color-option").forEach(option => {
     new Image().src = option.dataset.image;
     option.addEventListener("click", e => {
@@ -151,9 +149,7 @@
         else o.removeAttribute("aria-current");
       });
       label.dataset.initial = option.dataset.color;
-      title.textContent = option.dataset.color;
-      image.src = option.dataset.image;
-      image.alt = `The Jack in ${option.dataset.color}, folded`;
+      setImage(option);
     });
   });
 })();
