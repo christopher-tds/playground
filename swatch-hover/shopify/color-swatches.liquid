@@ -1,0 +1,32 @@
+{%- comment -%}
+  Excerpt of theme/snippets/product-sections-cta-menu-color-swatches.liquid
+  (ts-shopify-theme at 16b3d25d5). The only proposed markup change is the
+  <swatch-name-fade> wrapper around the existing container. Everything inside
+  is unchanged: the element reads data-color, data-initial and
+  [data-selected-color-title], which the snippet already renders.
+
+  TSColorSwatchesController (taylor-stitch.scripts.product.ts) sets the label
+  with .text() on mouseenter/mouseleave, which would overwrite the element's
+  layers. Its handlers would need to go, or skip containers inside the element.
+
+  If the dev would rather not add an element, the same show() logic can go in
+  TSColorSwatchesController (taylor-stitch.scripts.product.ts), replacing the
+  .text() calls in its mouseenter and mouseleave handlers.
+{%- endcomment -%}
+
+{%- if displayColorsCount > 1 -%}
+  {%- assign includeSwatchesJson = true -%}
+  <swatch-name-fade>
+    <div{% if id %} id="{{ id }}"{% endif %}
+      class="pdp-colorswatch" data-color-swatches-container>
+      <h5 class="selected-color-title">
+        <span>{{ colorswatchLabel }}</span><span data-selected-color-title class="selected-color-title__color" data-initial="{{ colorTitle }}">{{ colorTitle }}</span>
+      </h5>
+      <div class="product-color-options-wrapper">
+        <ul class="product-color-options">
+          {{ displaySwatches }}
+        </ul>
+      </div>
+    </div>
+  </swatch-name-fade>
+{%- endif -%}

@@ -1,0 +1,54 @@
+/*
+  Swatch name fade: the two stacked name layers.
+  Values from the jacquemus.com PDP: 16px travel, 300ms, cubic-bezier(.25, .1, .25, 1).
+*/
+
+swatch-name-fade {
+  display: block;
+}
+
+/* Both layers share one grid cell, so the label is as wide as the longer name */
+.snf {
+  display: inline-grid;
+}
+
+.snf__layer {
+  grid-area: 1 / 1;
+  font-style: inherit;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.snf__layer.is-rest {
+  opacity: 1;
+}
+
+.snf__layer.is-in {
+  opacity: 1;
+  animation: snf-in var(--snf-duration, 300ms) var(--snf-ease, cubic-bezier(.25, .1, .25, 1));
+}
+
+.snf__layer.is-out {
+  opacity: 0;
+  animation: snf-out var(--snf-duration, 300ms) var(--snf-ease, cubic-bezier(.25, .1, .25, 1));
+}
+
+@keyframes snf-in {
+  from { opacity: 0; transform: translateY(var(--snf-distance, 16px)); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes snf-out {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(calc(-1 * var(--snf-distance, 16px))); }
+}
+
+/* Reduced motion: a plain crossfade, no travel */
+@keyframes snf-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes snf-fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .snf__layer.is-in  { animation-name: snf-fade-in; }
+  .snf__layer.is-out { animation-name: snf-fade-out; }
+}

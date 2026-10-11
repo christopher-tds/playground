@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interactions / Swatch Hover / Jack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,300&display=swap">
+<!-- The component (reference implementation) -->
+<link rel="stylesheet" href="component/swatch-name-fade.css">
+<script src="component/swatch-name-fade.js" defer></script>
+<!-- Preview page only: developer files drawer -->
+<link rel="stylesheet" href="../_shared/dev-panel.css">
+<script src="../_shared/dev-panel.js" defer></script>
+<style>
+  /* ---------- Preview page only (not part of the component) ---------- */
+  :root {
+    --ui-text: #2c2a26;
+    --ui-muted: #6f6b64;
+    --ui-surface: #ffffff;
+    --ui-canvas: #ecebe8;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ui-canvas); color: var(--ui-text); font: 400 14px "Inter", -apple-system, BlinkMacSystemFont, sans-serif; }
+  button { font: inherit; color: inherit; }
+
+  .shell { padding: 20px 16px 48px; display: flex; flex-direction: column; gap: 20px; }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; max-width: 1440px; width: 100%; margin-inline: auto; }
+  .bar__id { display: flex; flex-direction: column; gap: 2px; }
+  .bar__eyebrow { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; font-weight: 500; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ui-muted); text-decoration: none; }
+  .bar__eyebrow svg { width: 12px; height: 12px; }
+  .bar__eyebrow:hover { color: var(--ui-text); }
+  .bar__eyebrow:focus-visible { outline: 2px solid var(--ui-text); outline-offset: 2px; }
+  .bar__title { font-size: 17px; font-weight: 500; }
+  .bar__group { color: var(--ui-muted); }
+  .bar__controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  .stage { width: 100%; max-width: 1440px; margin-inline: auto; }
+  .frame { background: var(--ui-surface); box-shadow: 0 1px 2px rgba(44,42,38,.06), 0 12px 40px -12px rgba(44,42,38,.18); container-type: inline-size; }
+  .note { text-align: left; font-size: 12.5px; color: var(--ui-muted); width: 100%; max-width: 1440px; margin: 0 auto; line-height: 1.5; }
+
+  /* ---------- Taylor Stitch PDP, recreated (sample brand mapping) ----------
+     Measured from taylorstitch.com/products/jack-in-washed-indigo-oxford-2501.
+     Orbikular and National 2 are licensed: Source Serif 4 and Inter stand in. */
+  .ts-pdp {
+    --ts-brand: #0f2130;
+    --ts-grey-60: #737577;
+    --ts-alternate: #a09473;
+    display: grid;
+    grid-template-columns: minmax(0, 560px) 435px;   /* TS buy box column is 435px at 1440 */
+    justify-content: center;
+    align-items: center;
+    gap: 64px;
+    padding: 48px;
+    color: var(--ts-brand);
+    font-family: "Inter", Helvetica, Arial, sans-serif;
+  }
+  @container (max-width: 760px) {
+    .ts-pdp { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px; }
+  }
+  .ts-pdp__media { margin: 0; background: #f2f2f2; aspect-ratio: 908 / 1135; }
+  .ts-pdp__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .ts-pdp__title { margin: 0 0 40px; font-family: "Source Serif 4", Georgia, serif; font-weight: 300; font-size: 42px; line-height: 51px; letter-spacing: -.045em; }
+  .ts-pdp__title small { display: block; font-size: inherit; }
+
+  .pdp-colorswatch { display: flex; flex-direction: column; gap: 12px; }
+  .selected-color-title { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 400; }
+  .selected-color-title span:first-child { font-size: 12px; line-height: 1.2; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ts-grey-60); }
+  .selected-color-title__color { font-size: 14px; line-height: 1; color: var(--ts-brand); }
+  .product-color-options { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; margin: 0; padding: 0; list-style: none; }
+  .product-color-options li { flex: 0 0 40px; width: 40px; height: 40px; }
+  /* TS ring states, with a solid fill standing in for the swatch photo */
+  .color-option { display: block; width: 40px; height: 40px; border: 3px solid #fff; border-radius: 50%; }
+  .color-option__fill { display: block; width: 100%; height: 100%; border-radius: 50%; border: 1px solid var(--ts-brand); background: var(--swatch); }
+  .color-option:hover, .color-option:focus-visible { border: 2px solid var(--ts-alternate); outline: none; }
+  .color-option:hover .color-option__fill, .color-option:focus-visible .color-option__fill { border-color: #fff; }
+  .color-option.color-option--selected { cursor: default; border: 2px solid var(--ts-brand); }
+  .color-option.color-option--selected .color-option__fill { border-color: #fff; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="bar">
+    <div class="bar__id">
+      <a class="bar__eyebrow" href="../"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/></svg>Playground</a>
+      <span class="bar__title"><span class="bar__group">Interactions / </span>Swatch Hover / Jack</span>
+    </div>
+    <div class="bar__controls">
+      <button type="button" class="dev-btn" data-dev-panel>
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M69.12,94.15,28.5,128l40.62,33.85a8,8,0,1,1-10.24,12.29l-48-40a8,8,0,0,1,0-12.29l48-40a8,8,0,0,1,10.24,12.3Zm176,27.7-48-40a8,8,0,1,0-10.24,12.3L227.5,128l-40.62,33.85a8,8,0,1,0,10.24,12.29l48-40a8,8,0,0,0,0-12.29ZM162.73,32.48a8,8,0,0,0-10.25,4.79l-64,176a8,8,0,0,0,4.79,10.26A8.14,8.14,0,0,0,96,224a8,8,0,0,0,7.52-5.27l64-176A8,8,0,0,0,162.73,32.48Z"/></svg>Code
+      </button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <div class="frame">
+      <div class="ts-pdp">
+        <figure class="ts-pdp__media">
+          <img id="pdp-image" src="assets/jack-washed-indigo-oxford.jpg" alt="The Jack in Washed Indigo Oxford, folded" width="908" height="1135">
+        </figure>
+        <div class="ts-pdp__info">
+          <h1 class="ts-pdp__title">The Jack <small>in <span id="pdp-color">Washed Indigo Oxford</span></small></h1>
+
+          <!-- Component markup: the contract product-sections-cta-menu-color-swatches.liquid renders, wrapped in the element -->
+          <swatch-name-fade>
+            <div class="pdp-colorswatch" data-color-swatches-container>
+              <h5 class="selected-color-title">
+                <span>Essentials</span><span data-selected-color-title class="selected-color-title__color" data-initial="Washed Indigo Oxford">Washed Indigo Oxford</span>
+              </h5>
+              <ul class="product-color-options">
+                <!-- Fills sampled from the lit areas of each product photo -->
+                <li><a href="#" data-color="Washed Indigo Oxford" data-image="assets/jack-washed-indigo-oxford.jpg" class="color-option color-option--selected" aria-current="true" aria-label="Washed Indigo Oxford" style="--swatch: #9db0c1"><span class="color-option__fill"></span></a></li>
+                <li><a href="#" data-color="White Everyday Oxford" data-image="assets/jack-white-everyday-oxford.jpg" class="color-option" aria-label="White Everyday Oxford" style="--swatch: #efedeb"><span class="color-option__fill"></span></a></li>
+                <li><a href="#" data-color="Smoked Olive Oxford" data-image="assets/jack-smoked-olive-oxford.jpg" class="color-option" aria-label="Smoked Olive Oxford" style="--swatch: #857e6d"><span class="color-option__fill"></span></a></li>
+              </ul>
+            </div>
+          </swatch-name-fade>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">Hover a swatch: its name slides up into the label, and moving off the swatches brings back the selected color. Click a swatch to select it. On Taylor Stitch each swatch links to that color's product page.</p>
+</div>
+
+<script type="application/json" id="dev-files">
+[
+  { "label": "Overview", "path": "README.md" },
+  { "label": "Swatches (Liquid)", "path": "shopify/color-swatches.liquid", "dest": "theme/snippets/product-sections-cta-menu-color-swatches.liquid" },
+  { "label": "CSS", "path": "component/swatch-name-fade.css" },
+  { "label": "JavaScript", "path": "component/swatch-name-fade.js" }
+]
+</script>
+
+<script>
+/* Preview page only: clicking a swatch selects it in place instead of loading
+   its product page. The component only needs data-initial kept up to date. */
+(() => {
+  const label = document.querySelector("[data-selected-color-title]");
+  const image = document.getElementById("pdp-image");
+  const title = document.getElementById("pdp-color");
+  document.querySelectorAll(".color-option").forEach(option => {
+    new Image().src = option.dataset.image;
+    option.addEventListener("click", e => {
+      e.preventDefault();
+      document.querySelectorAll(".color-option").forEach(o => {
+        o.classList.toggle("color-option--selected", o === option);
+        if (o === option) o.setAttribute("aria-current", "true");
+        else o.removeAttribute("aria-current");
+      });
+      label.dataset.initial = option.dataset.color;
+      title.textContent = option.dataset.color;
+      image.src = option.dataset.image;
+      image.alt = `The Jack in ${option.dataset.color}, folded`;
+    });
+  });
+})();
+</script>
+</body>
+</html>
