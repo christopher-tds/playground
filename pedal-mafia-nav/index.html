@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pedal Mafia Nav</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
+<!-- The component (reference implementation) -->
+<link rel="stylesheet" href="component/nav-link-hover.css">
+<!-- Preview page only: developer files drawer -->
+<link rel="stylesheet" href="../_shared/dev-panel.css">
+<script src="../_shared/dev-panel.js" defer></script>
+<style>
+  /* ---------- Preview page only (not part of the component) ---------- */
+  :root {
+    --ui-text: #2c2a26;
+    --ui-muted: #6f6b64;
+    --ui-surface: #ffffff;
+    --ui-canvas: #ecebe8;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ui-canvas); color: var(--ui-text); font: 400 14px "Inter", -apple-system, BlinkMacSystemFont, sans-serif; }
+  button { font: inherit; color: inherit; }
+
+  .shell { padding: 20px 16px 48px; display: flex; flex-direction: column; gap: 20px; }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; max-width: 1440px; width: 100%; margin-inline: auto; }
+  .bar__id { display: flex; flex-direction: column; gap: 2px; }
+  .bar__eyebrow { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; font-weight: 500; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ui-muted); text-decoration: none; }
+  .bar__eyebrow svg { width: 12px; height: 12px; }
+  .bar__eyebrow:hover { color: var(--ui-text); }
+  .bar__eyebrow:focus-visible { outline: 2px solid var(--ui-text); outline-offset: 2px; }
+  .bar__title { font-size: 17px; font-weight: 500; }
+  .bar__controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .seg { display: inline-flex; background: #dddbd6; border-radius: 999px; padding: 3px; }
+  .seg button { border: 0; background: transparent; padding: 7px 16px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 7px; color: var(--ui-muted); }
+  .seg button[aria-pressed="true"] { background: var(--ui-surface); color: var(--ui-text); box-shadow: 0 1px 2px rgba(44,42,38,.12); }
+  .seg button:hover { color: var(--ui-text); }
+  .seg button:focus-visible { outline: 2px solid var(--ui-text); outline-offset: 2px; }
+
+  .stage { width: 100%; max-width: 1440px; margin-inline: auto; }
+  .frame { background: var(--ui-surface); box-shadow: 0 1px 2px rgba(44,42,38,.06), 0 12px 40px -12px rgba(44,42,38,.18); overflow: hidden; width: 100%; }
+  .frame .scaler { width: 1440px; transform-origin: 0 0; }
+  .note { text-align: center; font-size: 12.5px; color: var(--ui-muted); max-width: 60ch; margin-inline: auto; line-height: 1.5; }
+
+  /* ---------- Pedal Mafia desktop header, recreated ----------
+     Measured from usa.pedalmafia.cc at 1440px and td-section-header.css.
+     ABC Whyte is licensed, so Inter stands in. */
+  .pm-header {
+    display: grid;
+    grid-template-columns: 160px 1fr 220px;   /* PM: logo 160, menu, icons 220 */
+    column-gap: 20px;
+    align-items: center;
+    height: 62px;
+    padding: 0 20px;
+    background: #fff;
+    border-bottom: 1px solid #f2f2f2;
+    position: relative;
+    z-index: 1;
+    color: #000;
+    font-family: "Inter", sans-serif;
+  }
+  /* Stand-in for the page under the header; PM's live bar hangs 3px below it */
+  .pm-page { height: 120px; background: #f5f5f4; }
+  .pm-header a { color: inherit; text-decoration: none; }
+  .pm-header__logo { display: block; line-height: 0; }
+  .pm-header__logo img { width: 160px; height: auto; }
+  .pm-header__menu { display: flex; justify-content: center; height: 62px; margin: 0; padding: 0; list-style: none; }
+  .pm-header__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 10px;                        /* PM: 10px each side, so labels sit 20px apart */
+    font-size: 14px;
+    line-height: 14px;
+    text-transform: uppercase;
+  }
+  .pm-header__item span { display: block; }
+  .pm-header__icons { display: flex; align-items: center; justify-content: flex-end; }
+  .pm-header__corner { display: block; padding: 0 5px; font-size: 14px; line-height: 14px; letter-spacing: .6px; text-transform: uppercase; }
+  .pm-header__icon { display: grid; place-items: center; width: 35px; height: 41px; padding: 0; border: 0; background: none; cursor: pointer; }
+  .pm-header__icon svg { width: 21px; height: 20px; }
+  .pm-header :focus-visible { outline: 2px solid #000; outline-offset: -2px; }
+
+  /* "Current" mode: PM's live hover, a 2px bar under the whole item that fades in */
+  .pm-header--current .nav-hover::after { display: none; }
+  .pm-header--current .pm-header__item::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #000;
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+  .pm-header--current .pm-header__item:hover::after { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="bar">
+    <div class="bar__id">
+      <a class="bar__eyebrow" href="../"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/></svg>Playground</a>
+      <span class="bar__title">Pedal Mafia nav</span>
+    </div>
+    <div class="bar__controls">
+      <div class="seg" role="group" aria-label="Hover style">
+        <button type="button" data-hover="jacquemus" aria-pressed="true">Jacquemus hover</button>
+        <button type="button" data-hover="current" aria-pressed="false">Current hover</button>
+      </div>
+      <button type="button" class="dev-btn" data-dev-panel>
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M69.12,94.15,28.5,128l40.62,33.85a8,8,0,1,1-10.24,12.29l-48-40a8,8,0,0,1,0-12.29l48-40a8,8,0,0,1,10.24,12.3Zm176,27.7-48-40a8,8,0,1,0-10.24,12.3L227.5,128l-40.62,33.85a8,8,0,1,0,10.24,12.29l48-40a8,8,0,0,0,0-12.29ZM162.73,32.48a8,8,0,0,0-10.25,4.79l-64,176a8,8,0,0,0,4.79,10.26A8.14,8.14,0,0,0,96,224a8,8,0,0,0,7.52-5.27l64-176A8,8,0,0,0,162.73,32.48Z"/></svg>Code
+      </button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <div class="frame" id="frame">
+      <div class="scaler" id="scaler">
+        <!-- Pedal Mafia desktop header at 1440px -->
+        <div class="pm-header" id="pm-header">
+          <a class="pm-header__logo" href="#" aria-label="Pedal Mafia home"><img src="assets/logo.svg" alt="Pedal Mafia" width="160" height="22"></a>
+          <nav aria-label="Main">
+            <ul class="pm-header__menu">
+              <li><a class="pm-header__item" href="#"><span class="nav-hover">New &amp; Featured</span></a></li>
+              <li><a class="pm-header__item" href="#"><span class="nav-hover">Men</span></a></li>
+              <li><a class="pm-header__item" href="#"><span class="nav-hover">Women</span></a></li>
+              <li><a class="pm-header__item" href="#"><span class="nav-hover">Accessories</span></a></li>
+              <li><a class="pm-header__item" href="#"><span class="nav-hover">Archive Sale</span></a></li>
+              <li><a class="pm-header__item" href="#"><span class="nav-hover">Custom Apparel</span></a></li>
+            </ul>
+          </nav>
+          <div class="pm-header__icons">
+            <a class="pm-header__corner" href="#"><span class="nav-hover">About</span></a>
+            <a class="pm-header__corner" href="#"><span class="nav-hover">Help</span></a>
+            <button type="button" class="pm-header__icon" aria-label="Search">
+              <svg viewBox="0 0 21 20" fill="none" aria-hidden="true"><path d="M16.9507 14.8873L13.8257 11.7623C14.5288 10.7206 14.8934 9.41855 14.7111 8.0123C14.3726 5.61646 12.4195 3.68938 10.0497 3.37688C6.508 2.93417 3.51321 5.92896 3.95592 9.47063C4.26842 11.8404 6.1955 13.7935 8.59134 14.1321C9.99759 14.3144 11.2997 13.9498 12.3674 13.2467L15.4663 16.3717C15.883 16.7623 16.534 16.7623 16.9507 16.3717C17.3413 15.955 17.3413 15.304 16.9507 14.8873ZM5.98717 8.74146C5.98717 6.91855 7.47154 5.40813 9.3205 5.40813C11.1434 5.40813 12.6538 6.91855 12.6538 8.74146C12.6538 10.5904 11.1434 12.0748 9.3205 12.0748C7.47154 12.0748 5.98717 10.5904 5.98717 8.74146Z" fill="currentColor"/></svg>
+            </button>
+            <a class="pm-header__icon" href="#" aria-label="Account">
+              <svg viewBox="0 0 21 20" fill="none" aria-hidden="true"><path d="M10.5792 5.31252C8.98413 5.31252 7.7146 6.6146 7.7146 8.1771C7.7146 9.77216 8.98413 11.0417 10.5792 11.0417C12.1417 11.0417 13.4438 9.77216 13.4438 8.1771C13.4438 6.6146 12.1417 5.31252 10.5792 5.31252Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5792 1.66669C5.95679 1.66669 2.24585 5.41018 2.24585 10C2.24585 14.6224 5.95679 18.3334 10.5792 18.3334C15.169 18.3334 18.9125 14.6224 18.9125 10C18.9125 5.41018 15.169 1.66669 10.5792 1.66669ZM15.7875 14.3294C14.9086 12.9623 13.4112 12.0834 11.7185 12.0834H9.40731C7.7146 12.0834 6.2172 12.9623 5.3383 14.3294C4.36174 13.1576 3.80835 11.6602 3.80835 10C3.80835 6.28908 6.83569 3.22919 10.5792 3.22919C14.2901 3.22919 17.35 6.28908 17.35 10C17.35 11.6602 16.7641 13.1576 15.7875 14.3294Z" fill="currentColor"/></svg>
+            </a>
+            <a class="pm-header__icon" href="#" aria-label="Cart">
+              <svg viewBox="0 0 21 21" fill="none" aria-hidden="true"><path d="M5.17638 3.47287C5.51217 3.47287 5.81744 3.75119 5.87849 4.09136L5.93954 4.46245H18.7606C19.4017 4.46245 19.8901 5.11187 19.707 5.73036L18.0585 11.6679C17.9364 12.1008 17.5701 12.3791 17.1122 12.3791H7.43534L7.71008 13.8635H17.1427C17.5396 13.8635 17.8754 14.2037 17.8754 14.6057C17.8754 15.0386 17.5396 15.3479 17.1427 15.3479H7.09955C6.76376 15.3479 6.45849 15.1005 6.39744 14.7603L4.56586 4.95724H2.97848C2.55111 4.95724 2.24585 4.648 2.24585 4.21506C2.24585 3.81304 2.55111 3.47287 2.97848 3.47287H5.17638ZM6.15323 17.8218C6.15323 17.0178 6.79428 16.3375 7.6185 16.3375C8.41218 16.3375 9.08376 17.0178 9.08376 17.8218C9.08376 18.6568 8.41218 19.3062 7.6185 19.3062C6.79428 19.3062 6.15323 18.6568 6.15323 17.8218ZM17.8754 17.8218C17.8754 18.6568 17.2038 19.3062 16.4101 19.3062C15.5859 19.3062 14.9448 18.6568 14.9448 17.8218C14.9448 17.0178 15.5859 16.3375 16.4101 16.3375C17.2038 16.3375 17.8754 17.0178 17.8754 17.8218Z" fill="currentColor"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="pm-page" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note" id="note"></p>
+</div>
+
+<script type="application/json" id="dev-files">
+[
+  { "label": "Overview", "path": "README.md" },
+  { "label": "PM header CSS", "path": "shopify/td-section-header-hover.css", "dest": "src/assets/td-section-header.css" },
+  { "label": "Generic CSS", "path": "component/nav-link-hover.css" }
+]
+</script>
+
+<script>
+/* Preview page only: hover toggle, and scaling the 1440px header to fit the window. */
+(() => {
+  const frame = document.getElementById("frame");
+  const scaler = document.getElementById("scaler");
+  const header = document.getElementById("pm-header");
+  const note = document.getElementById("note");
+  const buttons = [...document.querySelectorAll("[data-hover]")];
+  const NOTES = {
+    jacquemus: "Hover a menu item, About or Help: a 1px line draws in from the left and leaves to the right. Tab through for the focus state.",
+    current: "What's live today: a 2px bar under the whole menu item fades in, sitting on the header's bottom edge."
+  };
+
+  function fit() {
+    const s = Math.min(1, frame.clientWidth / 1440);
+    scaler.style.transform = `scale(${s})`;
+    frame.style.height = scaler.offsetHeight * s + "px";
+  }
+
+  function setHover(v) {
+    buttons.forEach(b => b.setAttribute("aria-pressed", b.dataset.hover === v));
+    header.classList.toggle("pm-header--current", v === "current");
+    note.textContent = NOTES[v];
+    try { history.replaceState(null, "", "#" + v); } catch (e) {}
+  }
+
+  buttons.forEach(b => b.addEventListener("click", () => setHover(b.dataset.hover)));
+  addEventListener("resize", fit);
+  new ResizeObserver(fit).observe(scaler);
+  fit();
+  setHover(location.hash === "#current" ? "current" : "jacquemus");
+})();
+</script>
+</body>
+</html>

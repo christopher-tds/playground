@@ -1,0 +1,67 @@
+/*
+  The same hover written against PM's existing header selectors.
+
+  Intended to replace the current hover in src/assets/td-section-header.css
+  (the `.header__menu-item:after` rules, lines 176–190 at 41a4791b): a 2px bar
+  under the whole 62px menu item that fades in. Both menu item types already
+  wrap their label in a <span> (td-header-mega-menu.liquid), so no markup
+  change is needed.
+*/
+
+.td-header {
+  --td-nav-hover-line: 1px;
+  --td-nav-hover-offset: -4px;   /* label line-height is 14px; this puts the line ~4px under the caps */
+  --td-nav-hover-ms: 300ms;
+  --td-nav-hover-ease: cubic-bezier(.25, .1, .25, 1);
+}
+
+.td-header ul.list-menu > li .header__menu-item span,
+.td-header .td-header__corner-link {
+  position: relative;
+}
+
+.td-header ul.list-menu > li .header__menu-item span::after,
+.td-header .td-header__corner-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--td-nav-hover-offset);
+  height: var(--td-nav-hover-line);
+  background: var(--td-nav-link-hover);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--td-nav-hover-ms) var(--td-nav-hover-ease);
+  pointer-events: none;
+}
+
+/* Corner links have 5px side padding (min-width: 1150px); keep the line on the text */
+@media (min-width: 1150px) {
+  .td-header .td-header__corner-link::after {
+    left: 0.5rem;
+    right: 0.5rem;
+  }
+}
+
+@media (hover: hover) {
+  .td-header ul.list-menu > li .header__menu-item:hover span::after,
+  .td-header .td-header__corner-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+.td-header ul.list-menu > li .header__menu-item:focus-visible span::after,
+.td-header details[open] > .header__menu-item span::after,
+.td-header .header__menu-item[aria-current="page"] span::after,
+.td-header .td-header__corner-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-header ul.list-menu > li .header__menu-item span::after,
+  .td-header .td-header__corner-link::after {
+    transition: none;
+  }
+}

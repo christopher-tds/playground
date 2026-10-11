@@ -1,0 +1,56 @@
+/*
+  Nav link hover (Jacquemus reference)
+
+  A thin line under the label draws in from the left on hover and leaves to
+  the right on mouse out. Measured from jacquemus.com/en_us: a 1px line in the
+  text color, 300ms, cubic-bezier(.25, .1, .25, 1).
+
+  Put .nav-hover on the label (the text element). The line runs when the label
+  or its direct parent (the link, summary or button) is hovered, so a tall
+  link still triggers it but the line sits under the text, not the link box.
+
+  Jacquemus animates width and swaps left/right anchors. This uses scaleX and
+  swaps transform-origin instead: the same motion, without layout work.
+*/
+
+.nav-hover {
+  position: relative;
+}
+
+.nav-hover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--nlh-offset, -4px);
+  height: var(--nlh-thickness, 1px);
+  background: var(--nlh-color, currentColor);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--nlh-duration, 300ms) var(--nlh-ease, cubic-bezier(.25, .1, .25, 1));
+  pointer-events: none;
+}
+
+/* Hover only where there's a real pointer, so a tap doesn't leave the line stuck on */
+@media (hover: hover) {
+  .nav-hover:hover::after,
+  :hover > .nav-hover::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+/* Keyboard focus, the open menu and the current page hold the line */
+:focus-visible > .nav-hover::after,
+[aria-expanded="true"] > .nav-hover::after,
+[aria-current="page"] > .nav-hover::after,
+details[open] > summary .nav-hover::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-hover::after {
+    transition: none;
+  }
+}
