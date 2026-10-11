@@ -47,5 +47,5 @@ Explorations are **behavior specs with a working reference implementation**, not
 - GitHub Pages serves from `main`, at the repo root. Pushing to `main` publishes.
 - Live URL: `https://christopher-tds.github.io/playground/<folder>/`
 - `.nojekyll` makes Pages serve the files exactly as they are. Keep it.
-- **Cache:** Pages sends `max-age=600`, so a browser can pair new HTML with an old script for up to 10 minutes. Link component files with a version query (`component/x.js?v=2`) and bump it whenever the CSS or JS changes.
+- **Cache:** Pages sends `max-age=600`, so a browser can pair new HTML with an old script for up to 10 minutes. Link component files with a version query (`component/x.js?v=2`) and bump it whenever the CSS or JS changes. The page's own HTML can also be up to 10 minutes stale; a hard refresh (Cmd+Shift+R) fetches it fresh.
 - **The repo is public:** anyone can see every file. Check before adding client work that shouldn't be visible.
