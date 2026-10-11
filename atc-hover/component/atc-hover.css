@@ -1,8 +1,9 @@
 /*
   Add to cart hover (Jacquemus reference)
 
-  Before a size is chosen, hovering the button slides "Add to cart" and the
-  price up and out while "Select a size" rises into place. Leaving reverses it.
+  Hovering slides the resting face (label and price) up and out while a hover
+  face rises into place: "Select a size" before a size is chosen, and other
+  messages per product state. Leaving reverses it.
   Values from the jacquemus.com PDP: 50px tall, 1px #2e2e2e border, 12px/500
   uppercase at 2.4px tracking; 16px travel, 300ms, cubic-bezier(.25, .1, .25, 1).
 
@@ -10,6 +11,9 @@
   That also plays them once on page load, so "Select a size" visibly slides out
   as the page appears. Here the resting animations wait for .is-ready, which
   atc-hover.js adds on the first hover or focus.
+
+  States: the outlined button means nothing can be added yet (no size, sold
+  out); .atc--filled (Jacquemus's size-chosen style) means it can be added.
 */
 
 .atc {
@@ -28,6 +32,11 @@
   letter-spacing: 2.4px;    /* Jacquemus: .24rem on a 10px root */
   text-transform: uppercase;
   cursor: pointer;
+}
+
+.atc--filled {
+  background: var(--atc-color, #2e2e2e);
+  color: var(--atc-bg, #fff);
 }
 
 .atc:focus-visible {
@@ -53,7 +62,7 @@
   opacity: 1;
 }
 
-.atc__face--select {
+.atc__face--hover {
   justify-content: center;
 }
 
@@ -80,12 +89,17 @@
   letter-spacing: .2em;
 }
 
+/* Jacquemus's disabled price color */
+.atc__price--muted {
+  color: var(--atc-muted, #a4a4a4);
+}
+
 /* Resting state: runs when the pointer leaves (after the first interaction) */
 .atc.is-ready .atc__face--default {
   animation: atc-in var(--atc-duration, 300ms) var(--atc-ease, cubic-bezier(.25, .1, .25, 1));
 }
 
-.atc.is-ready .atc__face--select {
+.atc.is-ready .atc__face--hover {
   animation: atc-out var(--atc-duration, 300ms) var(--atc-ease, cubic-bezier(.25, .1, .25, 1));
 }
 
@@ -96,8 +110,8 @@
   animation: atc-out var(--atc-duration, 300ms) var(--atc-ease, cubic-bezier(.25, .1, .25, 1));
 }
 
-.atc:hover .atc__face--select,
-.atc:focus-visible .atc__face--select {
+.atc:hover .atc__face--hover,
+.atc:focus-visible .atc__face--hover {
   opacity: 1;
   animation: atc-in var(--atc-duration, 300ms) var(--atc-ease, cubic-bezier(.25, .1, .25, 1));
 }
@@ -119,9 +133,9 @@
 /* Reduced motion: a plain crossfade. Resting rules first, so hover wins the tie */
 @media (prefers-reduced-motion: reduce) {
   .atc.is-ready .atc__face--default { animation-name: atc-fade-in; }
-  .atc.is-ready .atc__face--select { animation-name: atc-fade-out; }
+  .atc.is-ready .atc__face--hover { animation-name: atc-fade-out; }
   .atc:hover .atc__face--default,
   .atc:focus-visible .atc__face--default { animation-name: atc-fade-out; }
-  .atc:hover .atc__face--select,
-  .atc:focus-visible .atc__face--select { animation-name: atc-fade-in; }
+  .atc:hover .atc__face--hover,
+  .atc:focus-visible .atc__face--hover { animation-name: atc-fade-in; }
 }

@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
 <!-- The component (reference implementation) -->
-<link rel="stylesheet" href="component/atc-hover.css?v=2">
-<script src="component/atc-hover.js?v=2" defer></script>
+<link rel="stylesheet" href="component/atc-hover.css?v=3">
+<script src="component/atc-hover.js?v=3" defer></script>
 <!-- Preview page only: developer files drawer -->
 <link rel="stylesheet" href="../_shared/dev-panel.css">
 <script src="../_shared/dev-panel.js" defer></script>
@@ -36,6 +36,11 @@
   .bar__title { font-size: 17px; font-weight: 500; }
   .bar__group { color: var(--ui-muted); }
   .bar__controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .seg { display: inline-flex; background: #dddbd6; border-radius: 999px; padding: 3px; }
+  .seg button { border: 0; background: transparent; padding: 7px 16px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ui-muted); }
+  .seg button[aria-pressed="true"] { background: var(--ui-surface); color: var(--ui-text); box-shadow: 0 1px 2px rgba(44,42,38,.12); }
+  .seg button:hover { color: var(--ui-text); }
+  .seg button:focus-visible { outline: 2px solid var(--ui-text); outline-offset: 2px; }
 
   .stage { width: 100%; max-width: 1440px; margin-inline: auto; }
   .frame { background: var(--ui-surface); box-shadow: 0 1px 2px rgba(44,42,38,.06), 0 12px 40px -12px rgba(44,42,38,.18); display: grid; place-items: center; min-height: 360px; padding: 48px 16px; }
@@ -56,6 +61,12 @@
       <span class="bar__title"><span class="bar__group">Interactions / </span>ATC Hover / Simon</span>
     </div>
     <div class="bar__controls">
+      <div class="seg" role="group" aria-label="Product state">
+        <button type="button" data-show="no-size" aria-pressed="true">No size</button>
+        <button type="button" data-show="sold-out" aria-pressed="false">Size sold out</button>
+        <button type="button" data-show="pre-order" aria-pressed="false">Pre-order</button>
+        <button type="button" data-show="low-stock" aria-pressed="false">Low stock</button>
+      </div>
       <button type="button" class="dev-btn" data-dev-panel>
         <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M69.12,94.15,28.5,128l40.62,33.85a8,8,0,1,1-10.24,12.29l-48-40a8,8,0,0,1,0-12.29l48-40a8,8,0,0,1,10.24,12.3Zm176,27.7-48-40a8,8,0,1,0-10.24,12.3L227.5,128l-40.62,33.85a8,8,0,1,0,10.24,12.29l48-40a8,8,0,0,0,0-12.29ZM162.73,32.48a8,8,0,0,0-10.25,4.79l-64,176a8,8,0,0,0,4.79,10.26A8.14,8.14,0,0,0,96,224a8,8,0,0,0,7.52-5.27l64-176A8,8,0,0,0,162.73,32.48Z"/></svg>Code
       </button>
@@ -65,22 +76,48 @@
   <div class="stage">
     <div class="frame">
       <div class="buy">
-        <!-- Component markup: the button before a size is chosen -->
-        <button type="button" class="atc" aria-label="Add to cart, $650">
-          <span class="atc__face atc__face--default">
-            <span class="atc__add">
-              <span class="atc__icon" aria-hidden="true"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,64H176a48,48,0,0,0-96,0H40A16,16,0,0,0,24,80V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V80A16,16,0,0,0,216,64ZM128,32a32,32,0,0,1,32,32H96A32,32,0,0,1,128,32Zm88,168H40V80H80V96a8,8,0,0,0,16,0V80h64V96a8,8,0,0,0,16,0V80h40Z"/></svg></span>
-              Add to cart
+        <!-- Component markup: one button per product state; the switcher shows one -->
+        <div data-state="no-size">
+          <button type="button" class="atc" aria-label="Add to cart, $650. Select a size first">
+            <span class="atc__face atc__face--default">
+              <span class="atc__add"><span class="atc__icon" aria-hidden="true"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,64H176a48,48,0,0,0-96,0H40A16,16,0,0,0,24,80V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V80A16,16,0,0,0,216,64ZM128,32a32,32,0,0,1,32,32H96A32,32,0,0,1,128,32Zm88,168H40V80H80V96a8,8,0,0,0,16,0V80h64V96a8,8,0,0,0,16,0V80h40Z"/></svg></span>Add to cart</span>
+              <span class="atc__price">$ 650</span>
             </span>
-            <span class="atc__price">$ 650</span>
-          </span>
-          <span class="atc__face atc__face--select" aria-hidden="true">Select a size</span>
-        </button>
+            <span class="atc__face atc__face--hover" aria-hidden="true">Select a size</span>
+          </button>
+        </div>
+        <div data-state="sold-out" hidden>
+          <button type="button" class="atc" aria-label="Size M is sold out. Notify me when it's back">
+            <span class="atc__face atc__face--default">
+              <span class="atc__add">Sold out</span>
+              <span class="atc__price atc__price--muted">$ 650</span>
+            </span>
+            <span class="atc__face atc__face--hover" aria-hidden="true">Notify me</span>
+          </button>
+        </div>
+        <div data-state="pre-order" hidden>
+          <button type="button" class="atc atc--filled" aria-label="Pre-order, $650. Ships November 14">
+            <span class="atc__face atc__face--default">
+              <span class="atc__add"><span class="atc__icon" aria-hidden="true"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,64H176a48,48,0,0,0-96,0H40A16,16,0,0,0,24,80V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V80A16,16,0,0,0,216,64ZM128,32a32,32,0,0,1,32,32H96A32,32,0,0,1,128,32Zm88,168H40V80H80V96a8,8,0,0,0,16,0V80h64V96a8,8,0,0,0,16,0V80h40Z"/></svg></span>Pre-order</span>
+              <span class="atc__price">$ 650</span>
+            </span>
+            <span class="atc__face atc__face--hover" aria-hidden="true">Ships Nov 14</span>
+          </button>
+        </div>
+        <div data-state="low-stock" hidden>
+          <button type="button" class="atc atc--filled" aria-label="Add to cart, $650. Only 2 left">
+            <span class="atc__face atc__face--default">
+              <span class="atc__add"><span class="atc__icon" aria-hidden="true"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,64H176a48,48,0,0,0-96,0H40A16,16,0,0,0,24,80V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V80A16,16,0,0,0,216,64ZM128,32a32,32,0,0,1,32,32H96A32,32,0,0,1,128,32Zm88,168H40V80H80V96a8,8,0,0,0,16,0V80h64V96a8,8,0,0,0,16,0V80h40Z"/></svg></span>Add to cart</span>
+              <span class="atc__price">$ 650</span>
+            </span>
+            <span class="atc__face atc__face--hover" aria-hidden="true">Only 2 left</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <p class="note">Hover the button: "Add to cart" and the price slide up and out while "Select a size" rises into place. Moving off reverses it. On Jacquemus this is the button's state before a size is chosen.</p>
+  <p class="note" id="note"></p>
 </div>
 
 <script type="application/json" id="dev-files">
@@ -89,6 +126,30 @@
   { "label": "CSS", "path": "component/atc-hover.css" },
   { "label": "JavaScript", "path": "component/atc-hover.js" }
 ]
+</script>
+
+<script>
+/* Preview page only: product state switcher */
+(() => {
+  const buttons = [...document.querySelectorAll("[data-show]")];
+  const states = [...document.querySelectorAll("[data-state]")];
+  const note = document.getElementById("note");
+  const NOTES = {
+    "no-size": "No size chosen (Jacquemus's state): hover swaps \"Add to cart\" and the price for \"Select a size\". Outlined, because nothing can be added yet.",
+    "sold-out": "The chosen size is sold out: the price is muted and hover offers \"Notify me\", which would open a back-in-stock signup. Outlined, because it can't be added.",
+    "pre-order": "Pre-order: filled like Jacquemus's size-chosen button, and hover shows the ship date. The date also needs a home off-hover for touch.",
+    "low-stock": "Low stock: a normal add, with hover showing how many are left. On touch the count would need to show elsewhere, such as a line under the button."
+  };
+  function show(name) {
+    buttons.forEach(b => b.setAttribute("aria-pressed", b.dataset.show === name));
+    states.forEach(s => { s.hidden = s.dataset.state !== name; });
+    note.textContent = NOTES[name];
+    try { history.replaceState(null, "", "#" + name); } catch (e) {}
+  }
+  buttons.forEach(b => b.addEventListener("click", () => show(b.dataset.show)));
+  const initial = location.hash.slice(1);
+  show(NOTES[initial] ? initial : "no-size");
+})();
 </script>
 </body>
 </html>
