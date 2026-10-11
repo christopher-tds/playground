@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
 <!-- The component (reference implementation) -->
-<link rel="stylesheet" href="component/swatch-name-fade.css?v=2">
-<script src="component/swatch-name-fade.js?v=2" defer></script>
+<link rel="stylesheet" href="component/swatch-name-fade.css?v=3">
+<script src="component/swatch-name-fade.js?v=3" defer></script>
 <!-- Preview page only: developer files drawer -->
 <link rel="stylesheet" href="../_shared/dev-panel.css">
 <script src="../_shared/dev-panel.js" defer></script>
@@ -59,7 +59,6 @@
     .ts-pdp { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px; }
   }
   .ts-pdp__media { margin: 0; background: #f2f2f2; aspect-ratio: 908 / 1135; }
-  .ts-pdp__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
   .pdp-colorswatch { display: flex; flex-direction: column; gap: 12px; }
   .selected-color-title { margin: 0; font-weight: 400; font-size: 14px; line-height: 1; color: var(--ts-brand); }
@@ -90,8 +89,10 @@
   <div class="stage">
     <div class="frame">
       <div class="ts-pdp">
-        <figure class="ts-pdp__media">
-          <img id="pdp-image" src="assets/jack-washed-indigo-oxford.jpg" alt="The Jack in Washed Indigo Oxford, folded" width="908" height="1135">
+        <figure class="ts-pdp__media snf-media" id="pdp-media">
+          <div class="snf-media__frame is-active" data-color="Washed Indigo Oxford"><img src="assets/jack-washed-indigo-oxford.jpg" alt="The Jack in Washed Indigo Oxford, folded" width="908" height="1135"></div>
+          <div class="snf-media__frame" data-color="White Everyday Oxford" aria-hidden="true"><img src="assets/jack-white-everyday-oxford.jpg" alt="The Jack in White Everyday Oxford, folded" width="908" height="1135" loading="lazy"></div>
+          <div class="snf-media__frame" data-color="Smoked Olive Oxford" aria-hidden="true"><img src="assets/jack-smoked-olive-oxford.jpg" alt="The Jack in Smoked Olive Oxford, folded" width="908" height="1135" loading="lazy"></div>
         </figure>
         <div class="ts-pdp__info">
           <!-- Component markup: the contract product-sections-cta-menu-color-swatches.liquid renders, wrapped in the element -->
@@ -131,16 +132,27 @@
    page. The component only needs data-initial kept up to date. */
 (() => {
   const label = document.querySelector("[data-selected-color-title]");
-  const image = document.getElementById("pdp-image");
+  const frames = [...document.querySelectorAll("#pdp-media .snf-media__frame")];
+  const leaving = new Map();
   const setImage = swatch => {
-    image.src = swatch.dataset.image;
-    image.alt = `The Jack in ${swatch.dataset.color}, folded`;
+    const next = frames.find(f => f.dataset.color === swatch.dataset.color);
+    const prev = frames.find(f => f.classList.contains("is-active"));
+    if (!next || next === prev) return;
+    // The outgoing frame fades and blurs out on top for 75% of 300ms
+    prev.classList.remove("is-active");
+    prev.classList.add("is-leaving");
+    prev.setAttribute("aria-hidden", "true");
+    clearTimeout(leaving.get(prev));
+    leaving.set(prev, setTimeout(() => prev.classList.remove("is-leaving"), 225));
+    clearTimeout(leaving.get(next));
+    next.classList.remove("is-leaving");
+    next.classList.add("is-active");
+    next.removeAttribute("aria-hidden");
   };
   document.querySelector("swatch-name-fade").addEventListener("swatch-preview", e => {
     if (e.detail.swatch) setImage(e.detail.swatch);
   });
   document.querySelectorAll(".color-option").forEach(option => {
-    new Image().src = option.dataset.image;
     option.addEventListener("click", e => {
       e.preventDefault();
       document.querySelectorAll(".color-option").forEach(o => {

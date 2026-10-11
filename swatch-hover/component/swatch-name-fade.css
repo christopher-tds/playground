@@ -52,3 +52,44 @@ swatch-name-fade {
   .snf__layer.is-in  { animation-name: snf-fade-in; }
   .snf__layer.is-out { animation-name: snf-fade-out; }
 }
+
+/*
+  Product image swap (optional): the blur-to-focus crossfade from the
+  auto-rotating tabs exploration, at 300ms. The page stacks one .snf-media__frame
+  per color and moves .is-active; the outgoing frame gets .is-leaving for 75% of
+  the duration so it fades and blurs out on top of the incoming one.
+*/
+.snf-media {
+  position: relative;
+  overflow: hidden;   /* blur samples past the image box; keep the soft edge inside */
+}
+
+.snf-media__frame {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--snf-media-ms, 300ms) var(--snf-media-ease, cubic-bezier(.22, .61, .36, 1));
+}
+
+.snf-media__frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(var(--snf-media-blur, 18px));
+  transition: filter var(--snf-media-ms, 300ms) var(--snf-media-ease, cubic-bezier(.22, .61, .36, 1));
+}
+
+.snf-media__frame.is-active { opacity: 1; z-index: 1; }
+.snf-media__frame.is-active img { filter: blur(0); }
+
+.snf-media__frame.is-leaving,
+.snf-media__frame.is-leaving img {
+  transition-duration: calc(var(--snf-media-ms, 300ms) * .75);
+}
+.snf-media__frame.is-leaving { opacity: 0; z-index: 2; }
+.snf-media__frame.is-leaving img { filter: blur(var(--snf-media-blur, 18px)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .snf-media__frame img { filter: none; transition: none; }
+}
