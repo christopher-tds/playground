@@ -1,4 +1,4 @@
-# ATC hover: Simon
+# Button hover: Fade up
 
 The add-to-cart button from the jacquemus.com PDP (the de-Nîmes Simon denim shirt), recreated with its exact styling and hover. It's a reference for the dev, not drop-in theme code.
 
