@@ -16,7 +16,7 @@ The add-to-cart button from the jacquemus.com PDP (the de-Nîmes Simon denim shi
 | Button | 50px tall, full width of the buy column (332px at 1440), 1px `#2e2e2e` border, white, square corners |
 | Text | 12px, weight 500, uppercase, 2.4px tracking (`.24rem` on their 10px root), `#2e2e2e` |
 | Padding | 20px each side; "Add to cart" sits left, the price right (`.2em` tracking) |
-| Icon | 24px box, 5px before the label. Jacquemus draws a ~10px bag; the preview uses Phosphor Basket (Regular) at 14px |
+| Icon | 24px box, 5px before the label. Jacquemus draws a ~10px bag; the preview uses the Phosphor bag (Regular) at 14px |
 
 ## Changes from Jacquemus
 
