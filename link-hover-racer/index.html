@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pedal Mafia Nav</title>
+<title>Link Hover / Racer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
@@ -42,8 +42,10 @@
 
   .stage { width: 100%; max-width: 1440px; margin-inline: auto; }
   .frame { background: var(--ui-surface); box-shadow: 0 1px 2px rgba(44,42,38,.06), 0 12px 40px -12px rgba(44,42,38,.18); overflow: hidden; width: 100%; }
+  /* Visible, so PM's current hover bar can hang 3px below the header as it does live */
+  .frame { overflow: visible; }
   .frame .scaler { width: 1440px; transform-origin: 0 0; }
-  .note { text-align: center; font-size: 12.5px; color: var(--ui-muted); max-width: 60ch; margin-inline: auto; line-height: 1.5; }
+  .note { text-align: left; font-size: 12.5px; color: var(--ui-muted); width: 100%; max-width: 1440px; margin: 0 auto; line-height: 1.5; }
 
   /* ---------- Pedal Mafia desktop header, recreated ----------
      Measured from usa.pedalmafia.cc at 1440px and td-section-header.css.
@@ -62,8 +64,6 @@
     color: #000;
     font-family: "Inter", sans-serif;
   }
-  /* Stand-in for the page under the header; PM's live bar hangs 3px below it */
-  .pm-page { height: 120px; background: #f5f5f4; }
   .pm-header a { color: inherit; text-decoration: none; }
   .pm-header__logo { display: block; line-height: 0; }
   .pm-header__logo img { width: 160px; height: auto; }
@@ -106,11 +106,11 @@
   <header class="bar">
     <div class="bar__id">
       <a class="bar__eyebrow" href="../"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/></svg>Playground</a>
-      <span class="bar__title">Pedal Mafia nav</span>
+      <span class="bar__title">Link Hover / Racer</span>
     </div>
     <div class="bar__controls">
       <div class="seg" role="group" aria-label="Hover style">
-        <button type="button" data-hover="jacquemus" aria-pressed="true">Jacquemus hover</button>
+        <button type="button" data-hover="racer" aria-pressed="true">Racer hover</button>
         <button type="button" data-hover="current" aria-pressed="false">Current hover</button>
       </div>
       <button type="button" class="dev-btn" data-dev-panel>
@@ -149,7 +149,6 @@
             </a>
           </div>
         </div>
-        <div class="pm-page" aria-hidden="true"></div>
       </div>
     </div>
   </div>
@@ -174,7 +173,7 @@
   const note = document.getElementById("note");
   const buttons = [...document.querySelectorAll("[data-hover]")];
   const NOTES = {
-    jacquemus: "Hover a menu item, About or Help: a 1px line draws in from the left and leaves to the right. Tab through for the focus state.",
+    racer: "Hover a menu item, About or Help: a 1px line draws in from the left and leaves to the right. Tab through for the focus state.",
     current: "What's live today: a 2px bar under the whole menu item fades in, sitting on the header's bottom edge."
   };
 
@@ -195,7 +194,7 @@
   addEventListener("resize", fit);
   new ResizeObserver(fit).observe(scaler);
   fit();
-  setHover(location.hash === "#current" ? "current" : "jacquemus");
+  setHover(location.hash === "#current" ? "current" : "racer");
 })();
 </script>
 </body>
