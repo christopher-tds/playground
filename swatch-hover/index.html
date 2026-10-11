@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
 <!-- The component (reference implementation) -->
-<link rel="stylesheet" href="component/swatch-name-fade.css?v=3">
-<script src="component/swatch-name-fade.js?v=3" defer></script>
+<link rel="stylesheet" href="component/swatch-name-fade.css?v=4">
+<script src="component/swatch-name-fade.js?v=4" defer></script>
 <!-- Preview page only: developer files drawer -->
 <link rel="stylesheet" href="../_shared/dev-panel.css">
 <script src="../_shared/dev-panel.js" defer></script>
@@ -124,7 +124,7 @@
   </div>
 
   <div class="tune" role="group" aria-label="Motion settings">
-    <label class="tune__field"><span class="tune__label">Image fade <output data-for="--snf-media-ms"></output></span><input type="range" min="100" max="1500" step="50" value="300" data-var="--snf-media-ms" data-unit="ms"></label>
+    <label class="tune__field"><span class="tune__label">Image fade <output data-for="--snf-media-ms"></output></span><input type="range" min="100" max="1500" step="50" value="800" data-var="--snf-media-ms" data-unit="ms"></label>
     <label class="tune__field"><span class="tune__label">Image blur <output data-for="--snf-media-blur"></output></span><input type="range" min="0" max="40" step="1" value="18" data-var="--snf-media-blur" data-unit="px"></label>
     <label class="tune__field"><span class="tune__label">Name fade <output data-for="--snf-duration"></output></span><input type="range" min="100" max="1000" step="25" value="300" data-var="--snf-duration" data-unit="ms"></label>
     <label class="tune__field"><span class="tune__label">Name travel <output data-for="--snf-distance"></output></span><input type="range" min="0" max="24" step="1" value="16" data-var="--snf-distance" data-unit="px"></label>
@@ -161,7 +161,7 @@
     prev.setAttribute("aria-hidden", "true");
     clearTimeout(leaving.get(prev));
     // 75% of the image fade, read live so the tuning sliders apply
-    const ms = parseFloat(getComputedStyle(prev).getPropertyValue("--snf-media-ms")) || 300;
+    const ms = parseFloat(getComputedStyle(prev).getPropertyValue("--snf-media-ms")) || 800;
     leaving.set(prev, setTimeout(() => prev.classList.remove("is-leaving"), ms * .75));
     clearTimeout(leaving.get(next));
     next.classList.remove("is-leaving");

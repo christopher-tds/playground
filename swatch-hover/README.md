@@ -8,7 +8,7 @@ The Taylor Stitch PDP color swatches restyled after the jacquemus.com PDP: squar
 |---|---|---|
 | Swatches | 40px circles with a ring on hover and selected | 32px squares, 8px apart; a 1px line 5px under the selected one, nothing on hover |
 | Label | Group label ("Essentials") + color name | Color name only |
-| Hover a swatch | The label text swaps instantly | The new name slides up 16px into place and fades in, while the old one slides up and out. The product image switches to that color with a 300ms blur-to-focus crossfade. |
+| Hover a swatch | The label text swaps instantly | The new name slides up 16px into place and fades in, while the old one slides up and out. The product image switches to that color with an 800ms blur-to-focus crossfade. |
 | Move between swatches | Resets to the selected name on each `mouseleave`, then swaps again | Goes straight from name to name; it resets only when the pointer leaves the swatch row |
 | Keyboard | No change on focus | Focusing a swatch shows its name; tabbing out of the row resets |
 | Timing | — | 300ms, `cubic-bezier(.25, .1, .25, 1)` (from Jacquemus's live CSS) |
@@ -23,7 +23,7 @@ The element splits `[data-selected-color-title]` into two stacked layers in one 
 
 Each change also fires a bubbling `swatch-preview` event with `{ color, swatch }`, including the reset to the selected color. The preview listens for it and swaps the photo; the element doesn't touch the gallery itself.
 
-The image swap reuses the auto-rotating tabs crossfade at 300ms: the incoming image fades in from an 18px blur to sharp, while the outgoing one fades and blurs out on top over 225ms. The CSS is the optional `.snf-media` block in `swatch-name-fade.css`.
+The image swap reuses the auto-rotating tabs crossfade at 800ms: the incoming image fades in from an 18px blur to sharp, while the outgoing one fades and blurs out on top over 600ms. The CSS is the optional `.snf-media` block in `swatch-name-fade.css`.
 
 ## Reference files
 
@@ -39,7 +39,7 @@ The image swap reuses the auto-rotating tabs crossfade at 300ms: the incoming im
 |---|---|---|
 | `--snf-distance` | `16px` | How far each name travels |
 | `--snf-duration`, `--snf-ease` | `300ms`, `cubic-bezier(.25, .1, .25, 1)` | Name motion |
-| `--snf-media-ms`, `--snf-media-ease` | `300ms`, `cubic-bezier(.22, .61, .36, 1)` | Image crossfade |
+| `--snf-media-ms`, `--snf-media-ease` | `800ms`, `cubic-bezier(.22, .61, .36, 1)` | Image crossfade |
 | `--snf-media-blur` | `18px` | How soft the image starts and ends |
 
 ## Open decisions for the dev

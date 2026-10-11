@@ -55,7 +55,7 @@ swatch-name-fade {
 
 /*
   Product image swap (optional): the blur-to-focus crossfade from the
-  auto-rotating tabs exploration, at 300ms. The page stacks one .snf-media__frame
+  auto-rotating tabs exploration, at 800ms. The page stacks one .snf-media__frame
   per color and moves .is-active; the outgoing frame gets .is-leaving for 75% of
   the duration so it fades and blurs out on top of the incoming one.
 */
@@ -68,7 +68,7 @@ swatch-name-fade {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity var(--snf-media-ms, 300ms) var(--snf-media-ease, cubic-bezier(.22, .61, .36, 1));
+  transition: opacity var(--snf-media-ms, 800ms) var(--snf-media-ease, cubic-bezier(.22, .61, .36, 1));
 }
 
 .snf-media__frame img {
@@ -77,7 +77,7 @@ swatch-name-fade {
   height: 100%;
   object-fit: cover;
   filter: blur(var(--snf-media-blur, 18px));
-  transition: filter var(--snf-media-ms, 300ms) var(--snf-media-ease, cubic-bezier(.22, .61, .36, 1));
+  transition: filter var(--snf-media-ms, 800ms) var(--snf-media-ease, cubic-bezier(.22, .61, .36, 1));
 }
 
 .snf-media__frame.is-active { opacity: 1; z-index: 1; }
@@ -85,7 +85,7 @@ swatch-name-fade {
 
 .snf-media__frame.is-leaving,
 .snf-media__frame.is-leaving img {
-  transition-duration: calc(var(--snf-media-ms, 300ms) * .75);
+  transition-duration: calc(var(--snf-media-ms, 800ms) * .75);
 }
 .snf-media__frame.is-leaving { opacity: 0; z-index: 2; }
 .snf-media__frame.is-leaving img { filter: blur(var(--snf-media-blur, 18px)); }
