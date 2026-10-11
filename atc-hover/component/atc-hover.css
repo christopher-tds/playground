@@ -1,0 +1,127 @@
+/*
+  Add to cart hover (Jacquemus reference)
+
+  Before a size is chosen, hovering the button slides "Add to cart" and the
+  price up and out while "Select a size" rises into place. Leaving reverses it.
+  Values from the jacquemus.com PDP: 50px tall, 1px #2e2e2e border, 12px/500
+  uppercase at 2.4px tracking; 16px travel, 300ms, cubic-bezier(.25, .1, .25, 1).
+
+  Jacquemus does this in pure CSS, with the animations on the resting states.
+  That also plays them once on page load, so "Select a size" visibly slides out
+  as the page appears. Here the resting animations wait for .is-ready, which
+  atc-hover.js adds on the first hover or focus.
+*/
+
+.atc {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: var(--atc-height, 50px);
+  padding: 0;
+  border: 1px solid var(--atc-color, #2e2e2e);
+  border-radius: 0;
+  background: var(--atc-bg, #fff);
+  color: var(--atc-color, #2e2e2e);
+  font-family: var(--atc-font, inherit);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2.4px;    /* Jacquemus: .24rem on a 10px root */
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.atc:focus-visible {
+  outline: 1px solid var(--atc-color, #2e2e2e);
+  outline-offset: 3px;
+}
+
+/* Both faces fill the button, inset by its 20px side padding */
+.atc__face {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  width: calc(100% - 40px);
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.atc__face--default {
+  justify-content: space-between;
+  opacity: 1;
+}
+
+.atc__face--select {
+  justify-content: center;
+}
+
+.atc__add {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 24px box like Jacquemus's icon; the glyph sits inside it at 14px */
+.atc__icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+}
+
+.atc__icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.atc__price {
+  letter-spacing: .2em;
+}
+
+/* Resting state: runs when the pointer leaves (after the first interaction) */
+.atc.is-ready .atc__face--default {
+  animation: atc-in var(--atc-duration, 300ms) var(--atc-ease, cubic-bezier(.25, .1, .25, 1));
+}
+
+.atc.is-ready .atc__face--select {
+  animation: atc-out var(--atc-duration, 300ms) var(--atc-ease, cubic-bezier(.25, .1, .25, 1));
+}
+
+/* Hover, and keyboard focus (Jacquemus does hover only) */
+.atc:hover .atc__face--default,
+.atc:focus-visible .atc__face--default {
+  opacity: 0;
+  animation: atc-out var(--atc-duration, 300ms) var(--atc-ease, cubic-bezier(.25, .1, .25, 1));
+}
+
+.atc:hover .atc__face--select,
+.atc:focus-visible .atc__face--select {
+  opacity: 1;
+  animation: atc-in var(--atc-duration, 300ms) var(--atc-ease, cubic-bezier(.25, .1, .25, 1));
+}
+
+/* Jacquemus's show-from-bottom / hide-from-bottom keyframes */
+@keyframes atc-in {
+  from { opacity: 0; transform: translate3d(0, var(--atc-distance, 16px), 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes atc-out {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 0; transform: translate3d(0, calc(-1 * var(--atc-distance, 16px)), 0); }
+}
+
+@keyframes atc-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes atc-fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* Reduced motion: a plain crossfade. Resting rules first, so hover wins the tie */
+@media (prefers-reduced-motion: reduce) {
+  .atc.is-ready .atc__face--default { animation-name: atc-fade-in; }
+  .atc.is-ready .atc__face--select { animation-name: atc-fade-out; }
+  .atc:hover .atc__face--default,
+  .atc:focus-visible .atc__face--default { animation-name: atc-fade-out; }
+  .atc:hover .atc__face--select,
+  .atc:focus-visible .atc__face--select { animation-name: atc-fade-in; }
+}

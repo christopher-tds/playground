@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interactions / ATC Hover / Simon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
+<!-- The component (reference implementation) -->
+<link rel="stylesheet" href="component/atc-hover.css?v=1">
+<script src="component/atc-hover.js?v=1" defer></script>
+<!-- Preview page only: developer files drawer -->
+<link rel="stylesheet" href="../_shared/dev-panel.css">
+<script src="../_shared/dev-panel.js" defer></script>
+<style>
+  /* ---------- Preview page only (not part of the component) ---------- */
+  :root {
+    --ui-text: #2c2a26;
+    --ui-muted: #6f6b64;
+    --ui-surface: #ffffff;
+    --ui-canvas: #ecebe8;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ui-canvas); color: var(--ui-text); font: 400 14px "Inter", -apple-system, BlinkMacSystemFont, sans-serif; }
+  button { font: inherit; color: inherit; }
+
+  .shell { padding: 20px 16px 48px; display: flex; flex-direction: column; gap: 20px; }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; max-width: 1440px; width: 100%; margin-inline: auto; }
+  .bar__id { display: flex; flex-direction: column; gap: 2px; }
+  .bar__eyebrow { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; font-weight: 500; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ui-muted); text-decoration: none; }
+  .bar__eyebrow svg { width: 12px; height: 12px; }
+  .bar__eyebrow:hover { color: var(--ui-text); }
+  .bar__eyebrow:focus-visible { outline: 2px solid var(--ui-text); outline-offset: 2px; }
+  .bar__title { font-size: 17px; font-weight: 500; }
+  .bar__group { color: var(--ui-muted); }
+  .bar__controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  .stage { width: 100%; max-width: 1440px; margin-inline: auto; }
+  .frame { background: var(--ui-surface); box-shadow: 0 1px 2px rgba(44,42,38,.06), 0 12px 40px -12px rgba(44,42,38,.18); display: grid; place-items: center; min-height: 360px; padding: 48px 16px; }
+  .note { text-align: left; font-size: 12.5px; color: var(--ui-muted); width: 100%; max-width: 1440px; margin: 0 auto; line-height: 1.5; }
+
+  /* Jacquemus's buy column is 332px wide at 1440 */
+  .buy { width: 332px; max-width: 100%; }
+
+  /* Sample brand mapping */
+  .atc { --atc-font: "Inter", "Helvetica Neue", Arial, sans-serif; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="bar">
+    <div class="bar__id">
+      <a class="bar__eyebrow" href="../"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/></svg>Playground</a>
+      <span class="bar__title"><span class="bar__group">Interactions / </span>ATC Hover / Simon</span>
+    </div>
+    <div class="bar__controls">
+      <button type="button" class="dev-btn" data-dev-panel>
+        <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M69.12,94.15,28.5,128l40.62,33.85a8,8,0,1,1-10.24,12.29l-48-40a8,8,0,0,1,0-12.29l48-40a8,8,0,0,1,10.24,12.3Zm176,27.7-48-40a8,8,0,1,0-10.24,12.3L227.5,128l-40.62,33.85a8,8,0,1,0,10.24,12.29l48-40a8,8,0,0,0,0-12.29ZM162.73,32.48a8,8,0,0,0-10.25,4.79l-64,176a8,8,0,0,0,4.79,10.26A8.14,8.14,0,0,0,96,224a8,8,0,0,0,7.52-5.27l64-176A8,8,0,0,0,162.73,32.48Z"/></svg>Code
+      </button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <div class="frame">
+      <div class="buy">
+        <!-- Component markup: the button before a size is chosen -->
+        <button type="button" class="atc" aria-label="Add to cart, $650">
+          <span class="atc__face atc__face--default">
+            <span class="atc__add">
+              <span class="atc__icon" aria-hidden="true"><svg viewBox="0 0 256 256" fill="currentColor"><path d="M136,120v56a8,8,0,0,1-16,0V120a8,8,0,0,1,16,0Zm36.84-.8-5.6,56A8,8,0,0,0,174.4,184a7.32,7.32,0,0,0,.81,0,8,8,0,0,0,7.95-7.2l5.6-56a8,8,0,0,0-15.92-1.6Zm-89.68,0a8,8,0,0,0-15.92,1.6l5.6,56a8,8,0,0,0,8,7.2,7.32,7.32,0,0,0,.81,0,8,8,0,0,0,7.16-8.76ZM239.93,89.06,224.86,202.12A16.06,16.06,0,0,1,209,216H47a16.06,16.06,0,0,1-15.86-13.88L16.07,89.06A8,8,0,0,1,24,80H68.37L122,18.73a8,8,0,0,1,12,0L187.63,80H232a8,8,0,0,1,7.93,9.06ZM89.63,80h76.74L128,36.15ZM222.86,96H33.14L47,200H209Z"/></svg></span>
+              Add to cart
+            </span>
+            <span class="atc__price">$ 650</span>
+          </span>
+          <span class="atc__face atc__face--select" aria-hidden="true">Select a size</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">Hover the button: "Add to cart" and the price slide up and out while "Select a size" rises into place. Moving off reverses it. On Jacquemus this is the button's state before a size is chosen.</p>
+</div>
+
+<script type="application/json" id="dev-files">
+[
+  { "label": "Overview", "path": "README.md" },
+  { "label": "CSS", "path": "component/atc-hover.css" },
+  { "label": "JavaScript", "path": "component/atc-hover.js" }
+]
+</script>
+</body>
+</html>
