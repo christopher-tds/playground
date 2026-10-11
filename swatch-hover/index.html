@@ -41,6 +41,7 @@
   .frame { background: var(--ui-surface); box-shadow: 0 1px 2px rgba(44,42,38,.06), 0 12px 40px -12px rgba(44,42,38,.18); container-type: inline-size; }
   /* Tuning panel: live sliders for the motion variables */
   .tune { width: 100%; max-width: 1440px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 32px; }
+  .tune[hidden] { display: none; }
   .tune__field { display: flex; flex-direction: column; gap: 6px; min-width: 180px; }
   .tune__label { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; font-weight: 500; }
   .tune__label output { color: var(--ui-muted); font-variant-numeric: tabular-nums; }
@@ -123,7 +124,8 @@
     </div>
   </div>
 
-  <div class="tune" role="group" aria-label="Motion settings">
+  <!-- Tuning panel, hidden for now: remove `hidden` to bring the sliders back -->
+  <div class="tune" role="group" aria-label="Motion settings" hidden>
     <label class="tune__field"><span class="tune__label">Image fade <output data-for="--snf-media-ms"></output></span><input type="range" min="100" max="1500" step="50" value="800" data-var="--snf-media-ms" data-unit="ms"></label>
     <label class="tune__field"><span class="tune__label">Image blur <output data-for="--snf-media-blur"></output></span><input type="range" min="0" max="40" step="1" value="18" data-var="--snf-media-blur" data-unit="px"></label>
     <label class="tune__field"><span class="tune__label">Name fade <output data-for="--snf-duration"></output></span><input type="range" min="100" max="1000" step="25" value="300" data-var="--snf-duration" data-unit="ms"></label>
