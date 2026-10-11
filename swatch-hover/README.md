@@ -56,6 +56,7 @@ The image swap reuses the auto-rotating tabs crossfade at 300ms: the incoming im
 ## Preview notes
 
 - The swatches are 32px solid fills, sampled from the lit areas of each product photo: Washed Indigo Oxford `#9db0c1`, White Everyday Oxford `#efedeb`, Smoked Olive Oxford `#857e6d`. TS uses swatch photos.
+- The sliders under the preview set the four motion variables live (image fade and blur, name fade and travel). Once a setting is chosen, its values become the defaults here.
 - Clicking a swatch selects it in place. On TS each swatch links to that color's product page.
 - National 2 is licensed: Inter stands in.
 

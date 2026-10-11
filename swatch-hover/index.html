@@ -39,6 +39,15 @@
 
   .stage { width: 100%; max-width: 1440px; margin-inline: auto; }
   .frame { background: var(--ui-surface); box-shadow: 0 1px 2px rgba(44,42,38,.06), 0 12px 40px -12px rgba(44,42,38,.18); container-type: inline-size; }
+  /* Tuning panel: live sliders for the motion variables */
+  .tune { width: 100%; max-width: 1440px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 32px; }
+  .tune__field { display: flex; flex-direction: column; gap: 6px; min-width: 180px; }
+  .tune__label { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; font-weight: 500; }
+  .tune__label output { color: var(--ui-muted); font-variant-numeric: tabular-nums; }
+  .tune input[type="range"] { width: 100%; accent-color: var(--ui-text); }
+  .tune__reset { border: 1px solid #d3d0ca; background: var(--ui-surface); border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 500; color: var(--ui-muted); cursor: pointer; }
+  .tune__reset:hover { color: var(--ui-text); }
+  .tune__reset:focus-visible { outline: 2px solid var(--ui-text); outline-offset: 2px; }
   .note { text-align: left; font-size: 12.5px; color: var(--ui-muted); width: 100%; max-width: 1440px; margin: 0 auto; line-height: 1.5; }
 
   /* ---------- Taylor Stitch PDP, recreated (sample brand mapping) ----------
@@ -87,7 +96,7 @@
   </header>
 
   <div class="stage">
-    <div class="frame">
+    <div class="frame" id="tune-target">
       <div class="ts-pdp">
         <figure class="ts-pdp__media snf-media" id="pdp-media">
           <div class="snf-media__frame is-active" data-color="Washed Indigo Oxford"><img src="assets/jack-washed-indigo-oxford.jpg" alt="The Jack in Washed Indigo Oxford, folded" width="908" height="1135"></div>
@@ -112,6 +121,14 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="tune" role="group" aria-label="Motion settings">
+    <label class="tune__field"><span class="tune__label">Image fade <output data-for="--snf-media-ms"></output></span><input type="range" min="100" max="1500" step="50" value="300" data-var="--snf-media-ms" data-unit="ms"></label>
+    <label class="tune__field"><span class="tune__label">Image blur <output data-for="--snf-media-blur"></output></span><input type="range" min="0" max="40" step="1" value="18" data-var="--snf-media-blur" data-unit="px"></label>
+    <label class="tune__field"><span class="tune__label">Name fade <output data-for="--snf-duration"></output></span><input type="range" min="100" max="1000" step="25" value="300" data-var="--snf-duration" data-unit="ms"></label>
+    <label class="tune__field"><span class="tune__label">Name travel <output data-for="--snf-distance"></output></span><input type="range" min="0" max="24" step="1" value="16" data-var="--snf-distance" data-unit="px"></label>
+    <button type="button" class="tune__reset" id="tune-reset">Reset</button>
   </div>
 
   <p class="note">Hover a swatch: its name slides up into the label and the photo switches to that color. Moving off the swatches brings back the selected color. Click a swatch to select it. On Taylor Stitch each swatch links to that color's product page.</p>
@@ -143,7 +160,9 @@
     prev.classList.add("is-leaving");
     prev.setAttribute("aria-hidden", "true");
     clearTimeout(leaving.get(prev));
-    leaving.set(prev, setTimeout(() => prev.classList.remove("is-leaving"), 225));
+    // 75% of the image fade, read live so the tuning sliders apply
+    const ms = parseFloat(getComputedStyle(prev).getPropertyValue("--snf-media-ms")) || 300;
+    leaving.set(prev, setTimeout(() => prev.classList.remove("is-leaving"), ms * .75));
     clearTimeout(leaving.get(next));
     next.classList.remove("is-leaving");
     next.classList.add("is-active");
@@ -163,6 +182,26 @@
       label.dataset.initial = option.dataset.color;
       setImage(option);
     });
+  });
+})();
+</script>
+
+<script>
+/* Preview page only: the tuning sliders set the component's variables on the frame. */
+(() => {
+  const target = document.getElementById("tune-target");
+  const inputs = [...document.querySelectorAll(".tune input[data-var]")];
+  const apply = input => {
+    const value = input.value + input.dataset.unit;
+    target.style.setProperty(input.dataset.var, value);
+    document.querySelector(`output[data-for="${input.dataset.var}"]`).textContent = value;
+  };
+  inputs.forEach(input => {
+    input.addEventListener("input", () => apply(input));
+    apply(input);
+  });
+  document.getElementById("tune-reset").addEventListener("click", () => {
+    inputs.forEach(input => { input.value = input.defaultValue; apply(input); });
   });
 })();
 </script>
