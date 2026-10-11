@@ -15,7 +15,7 @@ The add-to-cart button from the jacquemus.com PDP (the de-Nîmes Simon denim shi
   | Low stock | Filled | Add to cart · price | Only 2 left |
 
   Outlined means nothing can be added yet; filled (`.atc--filled`, Jacquemus's size-chosen style: `#2e2e2e` fill, white text) means it can.
-- **Motion:** 300ms, `cubic-bezier(.25, .1, .25, 1)`. These are the same keyframes as the swatch name in `swatch-hover/`.
+- **Motion:** 300ms, `cubic-bezier(.25, .1, .25, 1)`. These are the same keyframes as the swatch name in `swatch-hover-fade-up/`.
 - **Keyboard:** focusing the button shows "Select a size" too. Jacquemus does hover only.
 - **Reduced motion:** a plain crossfade, no travel.
 

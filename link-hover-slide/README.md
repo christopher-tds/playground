@@ -1,4 +1,4 @@
-# Pedal Mafia nav: Jacquemus hover
+# Link hover: Slide
 
 A recreation of the Pedal Mafia desktop header (usa.pedalmafia.cc at 1440px) with the nav link hover from jacquemus.com/en_us applied. It's a proposal for the dev to confirm, not drop-in theme code.
 

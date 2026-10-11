@@ -1,4 +1,4 @@
-# Swatch hover: Jack
+# Swatch hover: Fade up
 
 The Taylor Stitch PDP color swatches restyled after the jacquemus.com PDP: square swatches, a line under the selected one, and a name and image that follow the hovered swatch. It's a proposal for the dev to confirm, not drop-in theme code.
 
