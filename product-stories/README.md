@@ -84,19 +84,18 @@ Three Taylor Stitch products from the [Winter 2026 lookbook](https://www.taylors
 
 | Product | Price | Roll, in order |
 |---|---|---|
-| The Jack in Fern Twist Waffle | $138 | Gallery 2, editorial 1, gallery 3, editorial 2, gallery 8 |
+| The Jack in Fern Twist Waffle | $138 | Gallery 2, editorial 1, gallery 3, editorial 2, gallery 8, window clip |
 | The Deck Pant in Khaki Bedford Cord | $148 | Editorial 1, gallery 3, ledge clip, gallery 2, gallery 5, sweater clip |
-| The Maritime Shirt Jacket in Heather Olive Wool | $198 | Gallery 4, editorial 1, gallery 2, ledge clip, gallery 3, gallery 8, swatch (gallery 9), editorial 3 |
+| The Maritime Shirt Jacket in Heather Olive Wool | $198 | Gallery 4, editorial 1, gallery 2, gallery 3, gallery 8, editorial 3 |
 
 **Image sizes:** gallery images are 4:5 (saved at 1080×1350). The mobile editorial panels are taller (1080×1656), so they crop less in the roughly 9:16 story. The PDP uses a separate wide file for desktop.
 
 **The clips:**
-- **Ledge clip** (`assets/lookbook-ledge.mp4`, 654×866, 11.6s, 4.5MB): the lookbook's mobile cut of a man sitting on a ledge in the Maritime Shirt Jacket and the Deck Pant. I checked both against their PDP photos (same model and location). Both stories use it mid-roll, and it never plays twice in a row.
+- **Ledge clip** (`assets/lookbook-ledge.mp4`, 654×866, 11.6s, 4.5MB): the lookbook's mobile cut of a man sitting on a ledge in the Maritime Shirt Jacket and the Deck Pant. I checked both against their PDP photos (same model and location). Only the Deck Pant story uses it.
 - **Sweater clip** (`assets/lookbook-sweater.mp4`, 654×866, 12.5s, 4.7MB): the back of a man in a patterned sweater. It's a mood clip; the Deck Pant isn't visible in it.
+- **Window clip** (`assets/lookbook-window.mp4`, 654×866, 15s, 5.5MB): a window looking out over a lake, with no people. It's a mood clip that closes the Jack story.
 
-**The swatch frame:** the Maritime's gallery image 9 is the 234×234 color swatch, so it shows upscaled about 3.4× in the story and reads as a soft wool texture.
-
-**No Jack clip:** none of the 12 lookbook clips clearly shows a Jack. No Taylor Stitch product has video in its Shopify media. The only video on the site is editorial: the homepage hero and the lookbook clips.
+**No clip shows a Jack:** none of the 12 lookbook clips clearly shows one, so the Jack's clip is a mood clip. No Taylor Stitch product has video in its Shopify media. The only video on the site is editorial: the homepage hero and the lookbook clips.
 
 **Lookbook page structure:** the lookbook doesn't tie clips to products. All clips and product links sit interleaved in one flat section, so pairings have to be made by eye.
 
@@ -126,7 +125,7 @@ These checks ran in the Claude desktop browser pane (Chromium), at 375×812 and 
 - A mouse drag and a scripted touch-type pointer swipe both change products. The snap-back on a short, slow drag wasn't checked on its own.
 - Pressing the card doesn't move the story.
 - Arrow keys and Space. The end of the last product and the start of the first.
-- The crops of all 16 images and both clips, and that every image loads. The sweater clip plays at the end of the Deck Pant roll, and its segment runs 12.5s.
+- The crops of all 15 images and the clips, and that every image loads. The window clip closes the Jack roll (its segment runs 15s), and the sweater clip closes the Deck Pant roll (12.5s).
 - Video: the clip plays only while it's the visible frame. Its segment runs 11.6s, matching the clip. Holding pauses it and releasing resumes it. Moving to the next photo pauses it and rewinds it to the start. The same clip in the second story picks up its length once loaded and plays. I didn't throttle the network to test buffering.
 - No console errors from the current script.
 
