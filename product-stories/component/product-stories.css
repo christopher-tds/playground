@@ -1,0 +1,116 @@
+/* Product stories: Instagram Stories-style product browsing.
+   Tap through one product's photos; swipe up or down to change products.
+   Brand variables (all optional, set on the element or any ancestor):
+     --ps-font            text font (inherit)
+     --ps-bg              backdrop behind the photos
+     --ps-text            card text
+     --ps-muted           card colorway text
+     --ps-header-text     header label and close icon
+     --ps-card-bg         card fill
+     --ps-radius          card corner radius (the thumbnail is half)
+     --ps-segment         progress track
+     --ps-segment-fill    progress fill
+     --ps-speed           product change duration
+     --ps-inset-top       space kept clear at the top, e.g. for a status bar (safe-area inset) */
+
+product-stories {
+  position: relative;
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ps-bg, #0f2130);
+  font-family: var(--ps-font, inherit);
+  color: var(--ps-text, #0f2130);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+product-stories:focus-visible { outline: 2px solid var(--ps-segment-fill, #fff); outline-offset: -4px; }
+
+/* Without JS: products scroll vertically and photos scroll sideways */
+.ps__track { height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; }
+.ps__story { position: relative; height: 100%; overflow: hidden; scroll-snap-align: start; }
+.ps__frames { display: flex; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; }
+.ps__frame { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; object-position: var(--ps-focus, 50% 50%); scroll-snap-align: start; -webkit-user-drag: none; pointer-events: none; }
+
+/* With JS: one story fills the element, the track moves between them */
+product-stories.is-ready { touch-action: none; }
+product-stories.is-ready .ps__track { overflow: visible; transition: transform var(--ps-speed, 420ms) cubic-bezier(.2, .8, .2, 1); will-change: transform; }
+product-stories.is-dragging .ps__track { transition: none; }
+product-stories.is-ready .ps__frames { display: block; position: relative; overflow: hidden; }
+product-stories.is-ready .ps__frame { position: absolute; inset: 0; opacity: 0; }
+product-stories.is-ready .ps__frame.is-active { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  product-stories.is-ready .ps__track { transition: none; }
+}
+
+/* Scrims keep the progress bar and card legible on light photos */
+.ps__story::before,
+.ps__story::after { content: ""; position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none; }
+.ps__story::before { top: 0; height: calc(96px + var(--ps-inset-top, env(safe-area-inset-top, 0px))); background: linear-gradient(rgba(0, 0, 0, .32), transparent); }
+.ps__story::after { bottom: 0; height: 160px; background: linear-gradient(transparent, rgba(0, 0, 0, .28)); }
+
+/* Progress: one segment per photo */
+.ps__progress { position: absolute; z-index: 2; top: calc(8px + var(--ps-inset-top, env(safe-area-inset-top, 0px))); left: 8px; right: 8px; display: flex; gap: 4px; transition: opacity .2s; }
+.ps__segment { flex: 1; height: 2px; border-radius: 2px; overflow: hidden; background: var(--ps-segment, rgba(255, 255, 255, .38)); }
+.ps__segment i { display: block; height: 100%; background: var(--ps-segment-fill, #fff); transform: scaleX(0); transform-origin: left; }
+.ps__segment.is-done i { transform: none; }
+.ps__segment.is-active i { animation: ps-fill var(--ps-duration, 5s) linear forwards; }
+product-stories.is-paused .ps__segment.is-active i,
+product-stories.is-buffering .ps__segment.is-active i { animation-play-state: paused; }
+/* Autoplay off: the current segment shows as filled */
+product-stories.is-static .ps__segment.is-active i { animation: none; transform: none; }
+@keyframes ps-fill { to { transform: none; } }
+
+/* Header: collection label and date on the left, close on the right.
+   From the Figma Story Header: 16px below the progress bar, 16px side insets. */
+.ps__header {
+  position: absolute; z-index: 2;
+  top: calc(26px + var(--ps-inset-top, env(safe-area-inset-top, 0px))); left: 16px; right: 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  color: var(--ps-header-text, #fff);
+  transition: opacity .2s;
+}
+.ps__label { margin: 0; display: flex; gap: 8px; min-width: 0; font-size: 14px; font-weight: 500; line-height: 1.3; white-space: nowrap; }
+.ps__label-date { opacity: .56; }
+/* 20px icon inside a 36px hit area that doesn't shift the layout */
+.ps__close { flex: none; display: grid; place-items: center; width: 36px; height: 36px; margin: -8px; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+.ps__close svg { width: 20px; height: 20px; }
+.ps__close:focus-visible { outline: 2px solid currentColor; outline-offset: -4px; border-radius: 4px; }
+
+/* Product card */
+.ps__card {
+  position: absolute; z-index: 2;
+  left: 12px; right: 12px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px 8px 8px;
+  border-radius: var(--ps-radius, 4px);
+  background: var(--ps-card-bg, #fff);
+  color: inherit; text-decoration: none;
+  transition: opacity .2s;
+}
+.ps__card:focus-visible { outline: 2px solid var(--ps-segment-fill, #fff); outline-offset: 2px; }
+.ps__thumb { flex: none; width: 48px; height: 60px; border-radius: calc(var(--ps-radius, 4px) / 2); object-fit: cover; background: #f2f2f2; }
+.ps__details { flex: 1; min-width: 0; display: flex; align-items: flex-start; gap: 12px; } /* price lines up with the title */
+.ps__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ps__title { font-size: 14px; font-weight: 500; line-height: 1.3; }
+.ps__color { font-size: 13px; line-height: 1.3; color: var(--ps-muted, rgba(15, 33, 48, .66)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ps__price { flex: none; font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* Holding a photo hides the overlays so the photo shows clearly */
+product-stories.is-holding .ps__progress,
+product-stories.is-holding .ps__header,
+product-stories.is-holding .ps__card { opacity: 0; }
+
+/* Pause control: shows only while it has keyboard focus */
+.ps__pause {
+  position: absolute; z-index: 3; top: calc(56px + var(--ps-inset-top, env(safe-area-inset-top, 0px))); right: 8px;
+  display: grid; place-items: center; width: 36px; height: 36px; padding: 0;
+  border: 0; border-radius: 50%; background: rgba(0, 0, 0, .45); color: #fff; cursor: pointer;
+}
+.ps__pause svg { width: 18px; height: 18px; }
+.ps__pause:not(:focus-visible) { clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; }
+.ps__pause:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.ps__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
